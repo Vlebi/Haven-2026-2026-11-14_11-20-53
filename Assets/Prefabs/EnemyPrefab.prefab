@@ -227,6 +227,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealthManager
   hitsToKill: 9
-  hitStunDuration: 1
-  knockbackForce: 3
+  hitStunDuration: 0.01
+  knockbackForce: 2.5
   enemySpawn: {fileID: 0}

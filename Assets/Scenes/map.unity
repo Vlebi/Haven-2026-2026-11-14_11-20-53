@@ -48676,9 +48676,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TopDownSpawner
   enemyPrefab: {fileID: 23838016047320616, guid: 3b96209376724514b9cb73ca63a72574, type: 3}
   enemySceneName: map
-  spawnInterval: 3
+  spawnInterval: 1.2
   spawnBuffer: 1
-  maxEnemies: 10
+  maxEnemies: 30
 --- !u!1 &1205856454
 GameObject:
   m_ObjectHideFlags: 0
@@ -51860,7 +51860,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 11
+  orthographic size: 2.25
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -52150,7 +52150,7 @@ MonoBehaviour:
   dashDuration: 0.2
   bounceForce: 12
   bounceDuration: 0.15
-  stunDuration: 3
+  stunDuration: 1.5
   isInvincible: 0
   speedBonusPerHit: 2
   damageBonusPerHit: 5
