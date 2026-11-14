@@ -1,20 +1,33 @@
+using System.Collections;
 using UnityEngine;
 
 public class score : MonoBehaviour
 {
-    
+    float timePassedBetweenDash;
+    public EnemyHealthManager EHM;
     public float currentscore = 0;
     public float currentMult = 1;
     public float getScore = 100;
+    public float scoreStreak = 1;
 
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
     void Update()
     {
-        
+        if (scoreStreak > 5)
+        {
+            scoreStreak = 4;
+        }
+    }
+    public void scoreStreakSystem()
+    {
+        timePassedBetweenDash = Time.time;
+        if (EHM.hitsRemaining <= 0 && timePassedBetweenDash >= 1.5f)
+        {
+            scoreStreak++;
+        }
+        else
+        {
+            scoreStreak = 1;
+            timePassedBetweenDash = 0;
+        }
     }
 }

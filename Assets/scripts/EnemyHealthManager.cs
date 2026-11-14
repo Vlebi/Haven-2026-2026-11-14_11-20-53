@@ -10,6 +10,7 @@ public class EnemyHealthManager : MonoBehaviour
     private int hitsRemaining;
     private Rigidbody2D rb;
     private EnemyMovement enemyMovement;
+    private score score;
     private Coroutine hitReactionCoroutine;
     private bool movementWasEnabled;
 
@@ -26,6 +27,9 @@ public class EnemyHealthManager : MonoBehaviour
         hitsRemaining -= Mathf.Max(1, hitDamage);
         if (hitsRemaining <= 0)
         {
+
+            score = FindFirstObjectByType<score>();
+            score.currentscore =+ score.getScore * score.currentMult * score.scoreStreak;
             if (enemySpawn == null)
                 enemySpawn = FindFirstObjectByType<EnemySpawn>();
 
