@@ -21,6 +21,8 @@ public class Attack : MonoBehaviour
     [SerializeField, Min(0f)] private float behindEnemySearchDistance = 1.25f;
     [SerializeField, Min(0f)] private float behindEnemySideTolerance = 0.4f;
     [SerializeField, Min(0f)] private float hammerSplashRadius = 0.75f;
+    [SerializeField] private LayerMask wallCollisionMask = ~0;
+    [SerializeField, Min(0f)] private float wallClearance = 0.01f;
 
     private Camera cam;
     private Transform aimPivot;
@@ -41,7 +43,7 @@ public class Attack : MonoBehaviour
         EquipWeapon(startingWeaponIndex);
     }
 
-    private void LateUpdate()
+    private void Update()
     {
         if (aimPivot == null)
             return;
@@ -60,6 +62,58 @@ public class Attack : MonoBehaviour
 
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         aimPivot.rotation = Quaternion.Euler(0f, 0f, angle);
+
+        WeaponDefinition weapon = EquippedWeapon;
+        if (weapon != null && weaponTransform != null && weaponHitbox != null)
+        {
+            weaponTransform.localPosition = weapon.offset;
+            ClampWeaponToWall();
+            Physics2D.SyncTransforms();
+        }
+    }
+
+    private void ClampWeaponToWall()
+    {
+        Vector2 origin = transform.position;
+        Vector2 desiredPosition = weaponTransform.position;
+        Vector2 toWeapon = desiredPosition - origin;
+        float distance = toWeapon.magnitude;
+        if (distance <= 0.001f)
+            return;
+
+        Vector2 direction = toWeapon / distance;
+        Vector2 perpendicular = new Vector2(-direction.y, direction.x);
+        Bounds hitboxBounds = weaponHitbox.bounds;
+        float halfWidth = Mathf.Abs(perpendicular.x) * hitboxBounds.extents.x +
+            Mathf.Abs(perpendicular.y) * hitboxBounds.extents.y;
+
+        float allowedDistance = distance;
+        for (int rayIndex = -2; rayIndex <= 2; rayIndex++)
+        {
+            Vector2 rayOrigin = origin + perpendicular * (halfWidth * rayIndex / 2f);
+            RaycastHit2D[] hits = Physics2D.RaycastAll(
+                rayOrigin,
+                direction,
+                distance,
+                wallCollisionMask);
+
+            foreach (RaycastHit2D hit in hits)
+            {
+                Collider2D obstacle = hit.collider;
+                if (obstacle == null || obstacle.isTrigger ||
+                    obstacle.transform == transform || obstacle.transform.IsChildOf(transform) ||
+                    obstacle.CompareTag("Enemy"))
+                    continue;
+
+                float hitDistance = Vector2.Dot(hit.point - origin, direction);
+                if (hitDistance <= 0f)
+                    continue;
+
+                allowedDistance = Mathf.Min(allowedDistance, Mathf.Max(0f, hitDistance - wallClearance));
+            }
+        }
+
+        weaponTransform.position = origin + direction * allowedDistance;
     }
 
     private void OnTriggerEnter2D(Collider2D other)

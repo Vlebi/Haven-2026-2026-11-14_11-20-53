@@ -4,7 +4,8 @@ public class HealthManager : MonoBehaviour
 {
     [Header("Health Settings")]
     public int maxHealth = 100;
-    private int currentHealth;
+    public int currentHealth;
+    public Movement movementcs;
 
     void Start()
     {
@@ -15,6 +16,7 @@ public class HealthManager : MonoBehaviour
     
     public void TakeDamage(int damageAmount)
     {
+        if (movementcs.isInvincible == true) return;
         currentHealth -= damageAmount;
         Debug.Log($"{gameObject.name} dealt {damageAmount} damage! Remaining HP: {currentHealth}");
 
