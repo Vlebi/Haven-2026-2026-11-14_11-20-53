@@ -31,6 +31,9 @@ Material:
     - _GrainStrength: 0
     - _HatchStrength: 0.148
     - _PaperStrength: 0
+    - _ColorPreservation: 1
+    - _ColorSaturationThreshold: 0.08
+    - _ColorSaturationSoftness: 0.2
     m_Colors: []
   m_BuildTextureStacks: []
   m_AllowLocking: 1
