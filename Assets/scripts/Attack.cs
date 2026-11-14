@@ -18,6 +18,9 @@ public class Attack : MonoBehaviour
 
     [SerializeField] private List<WeaponDefinition> weapons = new List<WeaponDefinition>();
     [SerializeField] private int startingWeaponIndex;
+    [SerializeField, Min(0f)] private float behindEnemySearchDistance = 1.25f;
+    [SerializeField, Min(0f)] private float behindEnemySideTolerance = 0.4f;
+    [SerializeField, Min(0f)] private float hammerSplashRadius = 0.75f;
 
     private Camera cam;
     private Transform aimPivot;
@@ -62,12 +65,87 @@ public class Attack : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         WeaponDefinition weapon = EquippedWeapon;
-        if (weapon == null || !other.CompareTag("Enemy"))
+        if (weapon == null)
             return;
 
-        EnemyHealthManager enemyHealth = other.GetComponentInParent<EnemyHealthManager>();
-        if (enemyHealth != null)
-            enemyHealth.TakeSwordHit(weapon.damageInHits);
+        EnemyHealthManager target = GetEnemyHealth(other);
+        if (target == null)
+            return;
+
+        target.TakeSwordHit(weapon.damageInHits);
+
+        switch (weapon.weaponName)
+        {
+            case "flimsy_spr":
+                DamageEnemyBehind(target, 1);
+                break;
+            case "spear":
+                DamageEnemyBehind(target, 3);
+                break;
+            case "hammer":
+                DamageNearbyEnemies(target, 3);
+                break;
+        }
+    }
+
+    private EnemyHealthManager GetEnemyHealth(Collider2D collider)
+    {
+        EnemyHealthManager enemyHealth = collider.GetComponentInParent<EnemyHealthManager>();
+        return enemyHealth != null && enemyHealth.gameObject.CompareTag("Enemy") ? enemyHealth : null;
+    }
+
+    private void DamageEnemyBehind(EnemyHealthManager target, int damageInHits)
+    {
+        Vector2 direction = (Vector2)target.transform.position - (Vector2)transform.position;
+        if (direction.sqrMagnitude < 0.0001f)
+            return;
+        direction.Normalize();
+
+        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(
+            target.transform.position,
+            behindEnemySearchDistance + behindEnemySideTolerance);
+
+        EnemyHealthManager nearestBehind = null;
+        float nearestDistance = float.MaxValue;
+        HashSet<EnemyHealthManager> checkedEnemies = new HashSet<EnemyHealthManager>();
+
+        foreach (Collider2D collider in nearbyColliders)
+        {
+            EnemyHealthManager candidate = GetEnemyHealth(collider);
+            if (candidate == null || candidate == target || !checkedEnemies.Add(candidate))
+                continue;
+
+            Vector2 offset = (Vector2)candidate.transform.position - (Vector2)target.transform.position;
+            float forwardDistance = Vector2.Dot(offset, direction);
+            float sideDistance = Mathf.Abs(direction.x * offset.y - direction.y * offset.x);
+            if (forwardDistance <= 0.05f || forwardDistance > behindEnemySearchDistance ||
+                sideDistance > behindEnemySideTolerance)
+                continue;
+
+            if (forwardDistance < nearestDistance)
+            {
+                nearestDistance = forwardDistance;
+                nearestBehind = candidate;
+            }
+        }
+
+        if (nearestBehind != null)
+            nearestBehind.TakeSwordHit(damageInHits);
+    }
+
+    private void DamageNearbyEnemies(EnemyHealthManager target, int damageInHits)
+    {
+        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(target.transform.position, hammerSplashRadius);
+        HashSet<EnemyHealthManager> damagedEnemies = new HashSet<EnemyHealthManager>();
+
+        foreach (Collider2D collider in nearbyColliders)
+        {
+            EnemyHealthManager candidate = GetEnemyHealth(collider);
+            if (candidate == null || candidate == target || !damagedEnemies.Add(candidate))
+                continue;
+
+            candidate.TakeSwordHit(damageInHits);
+        }
     }
 
     private void CreateAimVisuals()
