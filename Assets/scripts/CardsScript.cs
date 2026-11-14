@@ -19,7 +19,7 @@ public class CardsScript : MonoBehaviour
     }
     public void Regen()
     {
-
+        hm.regenMult = 2;
     }
     public void HalfHealthBack()
     {
