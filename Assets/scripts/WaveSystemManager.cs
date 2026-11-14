@@ -2,50 +2,61 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
 
-// Ez az osztály írja le, hogy mit tartalmaz egy hullám
 [System.Serializable]
 public class Wave
 {
-    public string waveName; // Pl. "1. Hullám"
-    public GameObject enemyPrefab; // Milyen ellenfél jöjjön
-    public int enemyCount; // Hány darab jöjjön összesen
-    public float spawnDelay; // Hány másodperc teljen el két spawnolás között
+    public string waveName;
+    public GameObject enemyPrefab;
+    public int enemyCount;
+    public float spawnDelay;
 }
 
 public class WaveSystemManager : MonoBehaviour
 {
     [Header("Wave Settings")]
-    public Wave[] waves; // A hullámok listája
-    public float timeBetweenWaves = 5f; // Szünet a hullámok között másodpercben
+    public Wave[] waves;
+    public float timeBetweenWaves = 5f;
 
     [Header("Spawn Settings")]
-    public string enemySceneName = "Enemy"; // Ide tesszük be őket (maradhat az eddigi)
+    public string enemySceneName = "Enemy";
     public float spawnBuffer = 1f;
+
+    // Hozzáadtunk egy Tag-et, ami alapján számoljuk az ellenfeleket
+    public string enemyTag = "Enemy";
 
     private int currentWaveIndex = 0;
 
+    // Ez a változó figyeli, hogy épp zajlik-e egy hullám
+    private bool isWaveActive = false;
+
     void Start()
     {
-        // Elindítjuk a hullámok kezelését
         StartCoroutine(StartNextWave());
+    }
+
+    void Update()
+    {
+        // Ha egy hullám aktív, de már nincs egyetlen ellenfél sem a pályán
+        if (isWaveActive && GameObject.FindGameObjectsWithTag(enemyTag).Length == 0)
+        {
+            // A hullám véget ért
+            isWaveActive = false;
+
+            // Jöhet a következő
+            currentWaveIndex++;
+            StartCoroutine(StartNextWave());
+        }
     }
 
     IEnumerator StartNextWave()
     {
-        // Ha van még hátra hullám
         if (currentWaveIndex < waves.Length)
         {
             Debug.Log($"Next wave starting: {waves[currentWaveIndex].waveName}");
 
-            // Várunk egy kicsit a hullám indulása előtt
             yield return new WaitForSeconds(timeBetweenWaves);
 
-            // Elindítjuk az aktuális hullám spawnolását
             yield return StartCoroutine(SpawnWave(waves[currentWaveIndex]));
-
-            // Ha lement a hullám, növeljük az indexet, és jöhet a következő
-            currentWaveIndex++;
-            StartCoroutine(StartNextWave());
         }
         else
         {
@@ -55,14 +66,15 @@ public class WaveSystemManager : MonoBehaviour
 
     IEnumerator SpawnWave(Wave wave)
     {
-        // Ledaráljuk annyiszor, ahány ellenfél van a hullámban
         for (int i = 0; i < wave.enemyCount; i++)
         {
             SpawnEnemyToScene(wave.enemyPrefab);
-
-            // Várunk a megadott ideig a következő ellenfél lerakása előtt
             yield return new WaitForSeconds(wave.spawnDelay);
         }
+
+        // Amikor az utolsó ellenfél is lespawnolt a hullámban, "aktívvá" tesszük a hullámot, 
+        // így az Update() elkezdi figyelni, hogy mikor halnak meg mind.
+        isWaveActive = true;
     }
 
     private void SpawnEnemyToScene(GameObject prefab)
