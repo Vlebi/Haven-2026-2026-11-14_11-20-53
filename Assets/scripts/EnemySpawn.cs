@@ -78,7 +78,7 @@ public class EnemySpawn : MonoBehaviour
 
         if (!TryGetMapBounds(targetScene, out Bounds mapBounds))
         {
-            Debug.LogWarning("Could not find wall collider bounds in the enemy scene.", this);
+            Debug.LogWarning("Could not find four corner children under Grid in the enemy scene.", this);
             return false;
         }
 
@@ -135,30 +135,36 @@ public class EnemySpawn : MonoBehaviour
     private bool TryGetMapBounds(Scene targetScene, out Bounds mapBounds)
     {
         mapBounds = default;
-        int wallLayer = LayerMask.NameToLayer("wall");
-        if (wallLayer < 0)
-            return false;
-
-        bool foundBounds = false;
-        Renderer[] mapRenderers = FindObjectsByType<Renderer>(FindObjectsSortMode.None);
-        foreach (Renderer mapRenderer in mapRenderers)
+        GameObject grid = null;
+        GameObject[] sceneRoots = targetScene.GetRootGameObjects();
+        foreach (GameObject root in sceneRoots)
         {
-            if (!mapRenderer.enabled || !mapRenderer.gameObject.activeInHierarchy ||
-                mapRenderer.gameObject.scene != targetScene || mapRenderer.gameObject.layer != wallLayer)
-                continue;
-
-            if (!foundBounds)
+            if (root.name == "Grid")
             {
-                mapBounds = mapRenderer.bounds;
-                foundBounds = true;
-            }
-            else
-            {
-                mapBounds.Encapsulate(mapRenderer.bounds);
+                grid = root;
+                break;
             }
         }
 
-        return foundBounds && mapBounds.size.x > 0f && mapBounds.size.y > 0f;
+        if (grid == null)
+            return false;
+
+        int cornerCount = 0;
+        foreach (Transform child in grid.transform)
+        {
+            if (!child.name.StartsWith("corner", System.StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            Vector3 cornerPosition = child.position;
+            if (cornerCount == 0)
+                mapBounds = new Bounds(cornerPosition, Vector3.zero);
+            else
+                mapBounds.Encapsulate(cornerPosition);
+
+            cornerCount++;
+        }
+
+        return cornerCount >= 4 && mapBounds.size.x > 0f && mapBounds.size.y > 0f;
     }
 
     private bool TryGetCandidatePosition(
