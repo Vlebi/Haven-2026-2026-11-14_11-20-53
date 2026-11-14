@@ -1,11 +1,11 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class TopDownSpawner : MonoBehaviour
+public class EnemySpawn : MonoBehaviour
 {
     [Header("Settings")]
     public GameObject enemyPrefab;
-    public string enemySceneName = "Enemy";
+    public string enemySceneName = "map";
 
     [Header("Spawn Parameters")]
     public float spawnInterval = 3f;

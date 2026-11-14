@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 3643313017133330944}
   - component: {fileID: 981739023666642576}
   - component: {fileID: 587424249182898632}
+  - component: {fileID: 1841973676742272537}
   m_Layer: 0
   m_Name: EnemyPrefab
   m_TagString: Enemy
@@ -84,7 +85,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 9
   m_MaskInteraction: 0
   m_Sprite: {fileID: 455405883375745328, guid: b53c1ab9967fa844394bc1729e0518d0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -212,3 +213,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HealthManager
   maxHealth: 100
+--- !u!114 &1841973676742272537
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 23838016047320616}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad5f72d3f5bc7e547893f24edadf93d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHealthManager
+  hitsToKill: 9
