@@ -443,7 +443,7 @@ MonoBehaviour:
   m_StreamingVersion: 20241001
   m_LegacyPriority: 0
   Target:
-    TrackingTarget: {fileID: 0}
+    TrackingTarget: {fileID: 2141398381}
     LookAtTarget: {fileID: 0}
     CustomLookAtTarget: 0
   Lens:
@@ -534,59 +534,59 @@ MonoBehaviour:
     tile: {fileID: 11400000, guid: f9a967d2348301d47bd39040f588aff2, type: 2}
     tier: 0
     damageInHits: 1
-    offset: {x: 0, y: 0}
-    scale: {x: 0, y: 0, z: 0}
+    offset: {x: 0.7, y: 0}
+    scale: {x: 2, y: 2, z: 2}
     spriteAngleOffset: -90
   - weaponName: mid_swd
     tile: {fileID: 11400000, guid: 67d85a26138f0d34280b1d7a84c1d797, type: 2}
     tier: 1
     damageInHits: 2
-    offset: {x: 0, y: 0}
-    scale: {x: 0, y: 0, z: 0}
-    spriteAngleOffset: 0
+    offset: {x: 0.7, y: 0}
+    scale: {x: 2, y: 2, z: 2}
+    spriteAngleOffset: -90
   - weaponName: fast_axe
     tile: {fileID: 11400000, guid: 1f1e3d122bf0d2847946c2afab459fee, type: 2}
     tier: 2
     damageInHits: 2
-    offset: {x: 0, y: 0}
-    scale: {x: 0, y: 0, z: 0}
-    spriteAngleOffset: 0
+    offset: {x: 0.7, y: 0}
+    scale: {x: 2, y: 2, z: 2}
+    spriteAngleOffset: -90
   - weaponName: flimsy_spr
     tile: {fileID: 11400000, guid: 4e51cf39d3ff7b74e97ddc63411dda4d, type: 2}
     tier: 2
     damageInHits: 2
-    offset: {x: 0, y: 0}
-    scale: {x: 0, y: 0, z: 0}
-    spriteAngleOffset: 0
+    offset: {x: 0.7, y: 0}
+    scale: {x: 2, y: 2, z: 2}
+    spriteAngleOffset: -90
   - weaponName: long_swd
     tile: {fileID: 11400000, guid: 81bf5780beb75fd4b8898c09070fb20c, type: 2}
     tier: 2
     damageInHits: 3
-    offset: {x: 0, y: 0}
-    scale: {x: 0, y: 0, z: 0}
-    spriteAngleOffset: 0
+    offset: {x: 0.8, y: 0}
+    scale: {x: 2, y: 2, z: 2}
+    spriteAngleOffset: -90
   - weaponName: large_axe
     tile: {fileID: 11400000, guid: 1c593e3ec044b85438c809f070762e6b, type: 2}
     tier: 4
     damageInHits: 5
-    offset: {x: 0, y: 0}
-    scale: {x: 0, y: 0, z: 0}
-    spriteAngleOffset: 0
+    offset: {x: 0.8, y: 0}
+    scale: {x: 2, y: 2, z: 2}
+    spriteAngleOffset: -90
   - weaponName: spear
     tile: {fileID: 11400000, guid: 0b967a76ecc6f8f4e9791d5e08d3fda6, type: 2}
     tier: 4
     damageInHits: 3
-    offset: {x: 0, y: 0}
-    scale: {x: 0, y: 0, z: 0}
-    spriteAngleOffset: 0
+    offset: {x: 0.8, y: 0}
+    scale: {x: 2, y: 2, z: 2}
+    spriteAngleOffset: -90
   - weaponName: hammer
     tile: {fileID: 11400000, guid: 9860fde75af9bfe4f9058abb1e544ee1, type: 2}
     tier: 5
     damageInHits: 5
-    offset: {x: 0, y: 0}
-    scale: {x: 0, y: 0, z: 0}
-    spriteAngleOffset: 0
-  startingWeaponIndex: 0
+    offset: {x: 0.8, y: 0}
+    scale: {x: 2, y: 2, z: 2}
+    spriteAngleOffset: -90
+  startingWeaponIndex: 7
 --- !u!58 &2141398383
 CircleCollider2D:
   m_ObjectHideFlags: 0
