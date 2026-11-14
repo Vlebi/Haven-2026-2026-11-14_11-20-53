@@ -1,19 +1,40 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using System.Collections.Generic;
 
 public class Attack : MonoBehaviour
 {
-    [SerializeField] private TileBase startingWeaponTile;
-    [SerializeField] private Vector2 weaponOffset = new Vector2(0.45f, 0f);
-    [SerializeField] private float weaponSpriteAngleOffset;
+    [System.Serializable]
+    public class WeaponDefinition
+    {
+        public string weaponName;
+        public TileBase tile;
+        [Min(1)] public int damageInHits = 1;
+        public Vector2 offset = new Vector2(0.45f, 0f);
+        public Vector3 scale = Vector3.one;
+        public float spriteAngleOffset;
+    }
+
+    [SerializeField] private List<WeaponDefinition> weapons = new List<WeaponDefinition>();
+    [SerializeField] private int startingWeaponIndex;
 
     private Camera cam;
     private Transform aimPivot;
+    private Transform weaponTransform;
+    private SpriteRenderer weaponRenderer;
+    private BoxCollider2D weaponHitbox;
+    private int equippedWeaponIndex = -1;
+
+    private WeaponDefinition EquippedWeapon =>
+        equippedWeaponIndex >= 0 && equippedWeaponIndex < weapons.Count
+            ? weapons[equippedWeaponIndex]
+            : null;
 
     private void Start()
     {
         cam = Camera.main;
         CreateAimVisuals();
+        EquipWeapon(startingWeaponIndex);
     }
 
     private void LateUpdate()
@@ -37,11 +58,21 @@ public class Attack : MonoBehaviour
         aimPivot.rotation = Quaternion.Euler(0f, 0f, angle);
     }
 
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        WeaponDefinition weapon = EquippedWeapon;
+        if (weapon == null || !other.CompareTag("Enemy"))
+            return;
+
+        EnemyHealthManager enemyHealth = other.GetComponentInParent<EnemyHealthManager>();
+        if (enemyHealth != null)
+            enemyHealth.TakeSwordHit(weapon.damageInHits);
+    }
+
     private void CreateAimVisuals()
     {
         SpriteRenderer originalRenderer = GetComponent<SpriteRenderer>();
-        Tile weaponTile = startingWeaponTile as Tile;
-        if (originalRenderer == null || weaponTile == null || weaponTile.sprite == null)
+        if (originalRenderer == null)
             return;
 
         aimPivot = new GameObject("AimPivot").transform;
@@ -61,16 +92,36 @@ public class Attack : MonoBehaviour
         characterRenderer.spriteSortPoint = originalRenderer.spriteSortPoint;
         originalRenderer.enabled = false;
 
-        GameObject weapon = new GameObject("ShortSword");
-        weapon.transform.SetParent(aimPivot, false);
-        weapon.transform.localPosition = weaponOffset;
-        weapon.transform.localRotation = Quaternion.Euler(0f, 0f, weaponSpriteAngleOffset);
+        GameObject weapon = new GameObject("Weapon");
+        weaponTransform = weapon.transform;
+        weaponTransform.SetParent(aimPivot, false);
 
-        SpriteRenderer weaponRenderer = weapon.AddComponent<SpriteRenderer>();
-        weaponRenderer.sprite = weaponTile.sprite;
+        weaponRenderer = weapon.AddComponent<SpriteRenderer>();
         weaponRenderer.color = Color.white;
         weaponRenderer.sharedMaterial = originalRenderer.sharedMaterial;
         weaponRenderer.sortingLayerID = originalRenderer.sortingLayerID;
         weaponRenderer.sortingOrder = originalRenderer.sortingOrder + 1;
+
+        weaponHitbox = weapon.AddComponent<BoxCollider2D>();
+        weaponHitbox.isTrigger = true;
+    }
+
+    public bool EquipWeapon(int weaponIndex)
+    {
+        if (weaponIndex < 0 || weaponIndex >= weapons.Count || weaponRenderer == null)
+            return false;
+
+        WeaponDefinition weapon = weapons[weaponIndex];
+        Tile tile = weapon.tile as Tile;
+        if (tile == null || tile.sprite == null)
+            return false;
+
+        equippedWeaponIndex = weaponIndex;
+        weaponRenderer.sprite = tile.sprite;
+        weaponTransform.localPosition = weapon.offset;
+        weaponTransform.localScale = weapon.scale;
+        weaponTransform.localRotation = Quaternion.Euler(0f, 0f, weapon.spriteAngleOffset);
+        weaponHitbox.size = tile.sprite.bounds.size;
+        return true;
     }
 }
