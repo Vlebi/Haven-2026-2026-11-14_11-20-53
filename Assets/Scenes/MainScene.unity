@@ -264,13 +264,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8ed1de288ea85c4cbe8a0bf5fa671fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Movement
-  speed: 10
+  speed: 5
   baseDamage: 10
-  dashSpeed: 20
+  dashSpeed: 15
   dashDuration: 0.2
   bounceForce: 12
   bounceDuration: 0.15
   stunDuration: 3
+  isInvincible: 0
   speedBonusPerHit: 2
   damageBonusPerHit: 5
 --- !u!212 &952725095
@@ -342,7 +343,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.24, y: -2.81, z: 0}
-  m_LocalScale: {x: 0.2, y: 0.2, z: 1}
+  m_LocalScale: {x: 0.3, y: 0.3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -395,7 +396,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 764b356afa4697644aaa60057473f3ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HealthManager
-  maxHealth: 100
+  maxHealth: 100000000
 --- !u!61 &952725099
 BoxCollider2D:
   m_ObjectHideFlags: 0
