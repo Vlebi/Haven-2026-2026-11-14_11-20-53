@@ -9,6 +9,7 @@ public class Attack : MonoBehaviour
     {
         public string weaponName;
         public TileBase tile;
+        [Min(0)] public int tier = 1;
         [Min(1)] public int damageInHits = 1;
         public Vector2 offset = new Vector2(0.45f, 0f);
         public Vector3 scale = Vector3.one;
