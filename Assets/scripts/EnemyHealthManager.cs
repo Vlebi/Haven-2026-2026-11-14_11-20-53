@@ -13,6 +13,7 @@ public class EnemyHealthManager : MonoBehaviour
     private Coroutine hitReactionCoroutine;
     private bool movementWasEnabled;
 
+   public EnemySpawn enemySpawn;
     private void Awake()
     {
         hitsRemaining = Mathf.Max(1, hitsToKill);
@@ -25,8 +26,10 @@ public class EnemyHealthManager : MonoBehaviour
         hitsRemaining -= Mathf.Max(1, hitDamage);
         if (hitsRemaining <= 0)
         {
+            enemySpawn.LowerSpawnedCount();
             Destroy(gameObject);
             return;
+            
         }
 
         StartHitReaction();

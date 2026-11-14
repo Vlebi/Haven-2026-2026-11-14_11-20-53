@@ -21,6 +21,8 @@ public class Attack : MonoBehaviour
     [SerializeField, Min(0f)] private float behindEnemySearchDistance = 1.25f;
     [SerializeField, Min(0f)] private float behindEnemySideTolerance = 0.4f;
     [SerializeField, Min(0f)] private float hammerSplashRadius = 0.75f;
+    [SerializeField] private LayerMask wallCollisionMask = ~0;
+    [SerializeField, Min(0f)] private float wallClearance = 0.01f;
 
     private Camera cam;
     private Transform aimPivot;
@@ -60,6 +62,45 @@ public class Attack : MonoBehaviour
 
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         aimPivot.rotation = Quaternion.Euler(0f, 0f, angle);
+
+        WeaponDefinition weapon = EquippedWeapon;
+        if (weapon != null && weaponTransform != null && weaponHitbox != null)
+        {
+            weaponTransform.localPosition = weapon.offset;
+            ClampWeaponToWall();
+        }
+    }
+
+    private void ClampWeaponToWall()
+    {
+        Vector2 origin = transform.position;
+        Vector2 desiredPosition = weaponTransform.position;
+        Vector2 toWeapon = desiredPosition - origin;
+        float distance = toWeapon.magnitude;
+        if (distance <= 0.001f)
+            return;
+
+        float castRadius = weaponHitbox.bounds.extents.magnitude;
+        RaycastHit2D[] hits = Physics2D.CircleCastAll(
+            origin,
+            castRadius,
+            toWeapon / distance,
+            distance,
+            wallCollisionMask);
+
+        float allowedDistance = distance;
+        foreach (RaycastHit2D hit in hits)
+        {
+            Collider2D obstacle = hit.collider;
+            if (obstacle == null || obstacle.isTrigger ||
+                obstacle.transform == transform || obstacle.transform.IsChildOf(transform) ||
+                obstacle.CompareTag("Enemy"))
+                continue;
+
+            allowedDistance = Mathf.Min(allowedDistance, Mathf.Max(0f, hit.distance - wallClearance));
+        }
+
+        weaponTransform.position = origin + toWeapon / distance * allowedDistance;
     }
 
     private void OnTriggerEnter2D(Collider2D other)

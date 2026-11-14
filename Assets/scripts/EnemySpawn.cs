@@ -34,6 +34,11 @@ public class EnemySpawn : MonoBehaviour
             timer = 0f;
         }
     }
+    
+    public void LowerSpawnedCount()
+    {
+        spawnedCount --;
+    }
 
     private void SpawnEnemyToScene()
     {

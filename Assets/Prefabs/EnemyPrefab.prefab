@@ -109,7 +109,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e3ae7c799f1de14ead69bbfdc70e78a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
-  speed: 3
+  speed: 0.7
   targetName: char1
   rotationOffset: -90
 --- !u!61 &817730578655188342
@@ -207,7 +207,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 23838016047320616}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 764b356afa4697644aaa60057473f3ab, type: 3}
   m_Name: 
@@ -229,3 +229,4 @@ MonoBehaviour:
   hitsToKill: 9
   hitStunDuration: 1
   knockbackForce: 3
+  enemySpawn: {fileID: 0}
