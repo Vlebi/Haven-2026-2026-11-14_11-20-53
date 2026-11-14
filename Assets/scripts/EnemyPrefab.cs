@@ -2,33 +2,42 @@ using UnityEngine;
 
 public class EnemyMovement : MonoBehaviour
 {
-    [Header("Movement Settings")]
+    [Header("Mozgás Beállítások")]
     public float speed = 3f;
-    public string targetName = "char1"; // Ide beírhatod az Inspectorban is a célobjektum nevét
+    public string targetName = "char1";
+
+    [Header("Forgás Beállítások")]
+    public float rotationOffset = -90f;
 
     private Transform playerTransform;
+    private Rigidbody2D rb;
 
     void Start()
     {
-        // Megkeressük a célobjektumot a pontos neve alapján az összes betöltött Scene-ben
+        rb = GetComponent<Rigidbody2D>();
         GameObject player = GameObject.Find(targetName);
 
         if (player != null)
         {
             playerTransform = player.transform;
         }
-        else
-        {
-            Debug.LogWarning($"Could not find an object named '{targetName}' in the scene!");
-        }
     }
 
-    void Update()
+    void FixedUpdate()
     {
-        // Ha megvan a célpont, az ellenség folyamatosan mozog felé
         if (playerTransform != null)
         {
-            transform.position = Vector2.MoveTowards(transform.position, playerTransform.position, speed * Time.deltaTime);
+            // Lenullázzuk a sodródást
+            rb.linearVelocity = Vector2.zero;
+
+            // Fizikai alapú mozgás (nem teleportál bele a játékosba)
+            Vector2 newPosition = Vector2.MoveTowards(rb.position, playerTransform.position, speed * Time.fixedDeltaTime);
+            rb.MovePosition(newPosition);
+
+            // Kard hegyének forgatása a játékos felé
+            Vector2 direction = playerTransform.position - transform.position;
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            rb.MoveRotation(angle + rotationOffset);
         }
     }
 }

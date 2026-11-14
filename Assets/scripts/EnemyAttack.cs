@@ -3,31 +3,31 @@ using UnityEngine;
 public class EnemyAttack : MonoBehaviour
 {
     [Header("Attack Settings")]
-    public int damageAmount = 10; // Mennyi HP-t vegyen le
-    public float attackCooldown = 1f; // Hány másodpercenként tudjon sebezni, amíg hozzáér
-    public string targetName = "char1"; // A játékos neve
+    public int damageAmount = 10;
+    public float attackCooldown = 1f;
+    public string targetName = "char1";
 
     private float lastAttackTime = 0f;
 
-    // Ez a beépített függvény folyamatosan fut, amíg a két fizikai test összeér
-    void OnCollisionStay2D(Collision2D collision)
+    // OnTriggerStay2D akkor fut le, ha egy "Is Trigger" collider belép a játékosba
+    void OnTriggerStay2D(Collider2D other)
     {
-        // Ellenőrizzük, hogy a játékoshoz értünk-e hozzá
-        if (collision.gameObject.name == targetName)
+        // Megnézzük, hogy maga az objektum vagy a szülője a "char1"-e
+        if (other.gameObject.name == targetName || (other.transform.parent != null && other.transform.parent.name == targetName))
         {
-            // Ellenőrizzük, hogy eltelt-e elég idő az előző sebzés óta
             if (Time.time >= lastAttackTime + attackCooldown)
             {
-                // Megpróbáljuk lekérni a játékosról a HealthManager scriptet
-                HealthManager playerHealth = collision.gameObject.GetComponent<HealthManager>();
+                // Megkeressük a HealthManager-t az objektumon vagy a szülőjén
+                HealthManager playerHealth = other.GetComponentInParent<HealthManager>();
 
                 if (playerHealth != null)
                 {
-                    // Ha megvan, levonjuk a HP-t
                     playerHealth.TakeDamage(damageAmount);
-
-                    // Frissítjük az utolsó támadás idejét
                     lastAttackTime = Time.time;
+                }
+                else
+                {
+                    Debug.LogWarning("I found the char1, but there's no HealthManager script on it!");
                 }
             }
         }
