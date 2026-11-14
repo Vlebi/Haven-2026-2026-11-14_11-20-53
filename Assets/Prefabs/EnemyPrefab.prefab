@@ -109,7 +109,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e3ae7c799f1de14ead69bbfdc70e78a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
-  speed: 3
+  speed: 0.7
   targetName: char1
   rotationOffset: -90
 --- !u!61 &817730578655188342
@@ -213,6 +213,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HealthManager
   maxHealth: 100
+  movementcs: {fileID: 0}
 --- !u!114 &1841973676742272537
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -226,3 +227,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealthManager
   hitsToKill: 9
+  hitStunDuration: 0.01
+  knockbackForce: 2.5
+  enemySpawn: {fileID: 0}

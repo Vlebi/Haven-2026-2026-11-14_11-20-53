@@ -25,12 +25,13 @@ Material:
     m_TexEnvs: []
     m_Ints: []
     m_Floats:
-    - _Contrast: 1.35
+    - _ColorPreservation: 0.9
+    - _Contrast: 1.25
     - _EdgeStrength: 0
     - _EdgeThreshold: 0.2
-    - _GrainStrength: 0
-    - _HatchStrength: 0.148
-    - _PaperStrength: 0
+    - _GrainStrength: 0.083
+    - _HatchStrength: 0.051
+    - _PaperStrength: 0.032
     m_Colors: []
   m_BuildTextureStacks: []
   m_AllowLocking: 1
