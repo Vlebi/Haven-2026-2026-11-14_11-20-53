@@ -9,24 +9,20 @@ public class Wave
     public GameObject enemyPrefab;
     public int enemyCount;
     public float spawnDelay;
+    public string targetSceneName = "Enemy"; // Alapból az Enemy Scene-be teszi, a 10. körnél átírhatod a Boss Scene nevére!
 }
 
 public class WaveSystemManager : MonoBehaviour
 {
-    [Header("Wave Settings")]
+    [Header("Hullámok Beállítása")]
     public Wave[] waves;
     public float timeBetweenWaves = 5f;
 
-    [Header("Spawn Settings")]
-    public string enemySceneName = "Enemy";
+    [Header("Spawn Beállítások")]
     public float spawnBuffer = 1f;
-
-    // Hozzáadtunk egy Tag-et, ami alapján számoljuk az ellenfeleket
     public string enemyTag = "Enemy";
 
     private int currentWaveIndex = 0;
-
-    // Ez a változó figyeli, hogy épp zajlik-e egy hullám
     private bool isWaveActive = false;
 
     void Start()
@@ -36,13 +32,9 @@ public class WaveSystemManager : MonoBehaviour
 
     void Update()
     {
-        // Ha egy hullám aktív, de már nincs egyetlen ellenfél sem a pályán
         if (isWaveActive && GameObject.FindGameObjectsWithTag(enemyTag).Length == 0)
         {
-            // A hullám véget ért
             isWaveActive = false;
-
-            // Jöhet a következő
             currentWaveIndex++;
             StartCoroutine(StartNextWave());
         }
@@ -52,15 +44,13 @@ public class WaveSystemManager : MonoBehaviour
     {
         if (currentWaveIndex < waves.Length)
         {
-            Debug.Log($"Next wave starting: {waves[currentWaveIndex].waveName}");
-
+            Debug.Log($"Következő hullám indul: {waves[currentWaveIndex].waveName}");
             yield return new WaitForSeconds(timeBetweenWaves);
-
             yield return StartCoroutine(SpawnWave(waves[currentWaveIndex]));
         }
         else
         {
-            Debug.Log("All waves completed! Victory!");
+            Debug.Log("Legyőzted a Bosst! Győzelem!");
         }
     }
 
@@ -68,24 +58,26 @@ public class WaveSystemManager : MonoBehaviour
     {
         for (int i = 0; i < wave.enemyCount; i++)
         {
-            SpawnEnemyToScene(wave.enemyPrefab);
+            SpawnEnemyToScene(wave.enemyPrefab, wave.targetSceneName);
             yield return new WaitForSeconds(wave.spawnDelay);
         }
 
-        // Amikor az utolsó ellenfél is lespawnolt a hullámban, "aktívvá" tesszük a hullámot, 
-        // így az Update() elkezdi figyelni, hogy mikor halnak meg mind.
         isWaveActive = true;
     }
 
-    private void SpawnEnemyToScene(GameObject prefab)
+    private void SpawnEnemyToScene(GameObject prefab, string sceneName)
     {
-        Scene targetScene = SceneManager.GetSceneByName(enemySceneName);
+        Scene targetScene = SceneManager.GetSceneByName(sceneName);
 
         if (targetScene.IsValid() && targetScene.isLoaded)
         {
             Vector3 spawnPos = GetOffScreenPosition();
             GameObject newEnemy = Instantiate(prefab, spawnPos, Quaternion.identity);
             SceneManager.MoveGameObjectToScene(newEnemy, targetScene);
+        }
+        else
+        {
+            Debug.LogWarning($"A '{sceneName}' nevű Scene nincs betöltve a Hierarchy-ban!");
         }
     }
 
