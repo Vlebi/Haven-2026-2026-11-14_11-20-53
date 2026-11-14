@@ -16,6 +16,7 @@ public class score : MonoBehaviour
         {
             scoreStreak = 4;
         }
+        Debug.Log(currentscore);
     }
     public void scoreStreakSystem()
     {

@@ -7,7 +7,7 @@ public class EnemyHealthManager : MonoBehaviour
     [SerializeField] private float hitStunDuration = 1f;
     [SerializeField] private float knockbackForce = 3f;
 
-    private int hitsRemaining;
+    public int hitsRemaining;
     private Rigidbody2D rb;
     private EnemyMovement enemyMovement;
     private score score;
