@@ -525,15 +525,52 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce6c828dc17d6fd468087e2b27899e25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Attack
-  weapons: []
-  startingWeaponIndex: 0
+  currentDamageBuff: 0
+  weapons:
+  - weaponName: short_swd
+    tile: {fileID: 11400000, guid: f9a967d2348301d47bd39040f588aff2, type: 2}
+    tier: 0
+    damageInHits: 1
+    offset: {x: 0.7, y: 0}
+    scale: {x: 3.2, y: 3.2, z: 1}
+    spriteAngleOffset: -90
+  - weaponName: mid_swd
+    tile: {fileID: 11400000, guid: 67d85a26138f0d34280b1d7a84c1d797, type: 2}
+    tier: 1
+    damageInHits: 2
+    offset: {x: 0.7, y: 0}
+    scale: {x: 3.2, y: 3.2, z: 1}
+    spriteAngleOffset: -90
+  - weaponName: flimsy_spr
+    tile: {fileID: 11400000, guid: 4e51cf39d3ff7b74e97ddc63411dda4d, type: 2}
+    tier: 2
+    damageInHits: 3
+    offset: {x: 0.7, y: 0}
+    scale: {x: 3.2, y: 3.2, z: 1}
+    spriteAngleOffset: -90
+  - weaponName: spear
+    tile: {fileID: 11400000, guid: 0b967a76ecc6f8f4e9791d5e08d3fda6, type: 2}
+    tier: 3
+    damageInHits: 3
+    offset: {x: 0.7, y: 0}
+    scale: {x: 3.2, y: 3.2, z: 1}
+    spriteAngleOffset: -90
+  - weaponName: short_swd
+    tile: {fileID: 11400000, guid: 9860fde75af9bfe4f9058abb1e544ee1, type: 2}
+    tier: 4
+    damageInHits: 9
+    offset: {x: 0.7, y: 0}
+    scale: {x: 3.2, y: 3.2, z: 1}
+    spriteAngleOffset: -90
+  startingWeaponIndex: 1
   behindEnemySearchDistance: 1.25
   behindEnemySideTolerance: 0.4
   hammerSplashRadius: 0.75
   wallCollisionMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 8
   wallClearance: 0.01
+  equippedWeaponIndex: -1
 --- !u!114 &95567545
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -547,7 +584,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CardsScript
   hm: {fileID: 0}
-  atk: {fileID: 0}
+  atk: {fileID: 95567544}
+  enemyMove: {fileID: 0}
+  mvmnt: {fileID: 0}
+  score: {fileID: 0}
 --- !u!4 &95567546
 Transform:
   m_ObjectHideFlags: 0
@@ -2275,7 +2315,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Regenation increases
+  m_text: Regenaration increases
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 509d21f4947a96e48a411ee9cb67c990, type: 2}
   m_sharedMaterial: {fileID: -3280892773538166253, guid: 509d21f4947a96e48a411ee9cb67c990, type: 2}
@@ -2302,10 +2342,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 65
-  m_fontSizeBase: 65
+  m_fontSize: 64.2
+  m_fontSizeBase: 60
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 16
@@ -2341,7 +2381,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 315.66412, z: 0, w: 0}
+  m_margin: {x: 19.5, y: 315.66412, z: 14.368408, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -4063,7 +4103,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: You get a speed boost for this wave
+  m_text: You get a speed boost
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 509d21f4947a96e48a411ee9cb67c990, type: 2}
   m_sharedMaterial: {fileID: -3280892773538166253, guid: 509d21f4947a96e48a411ee9cb67c990, type: 2}
@@ -4200,7 +4240,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'If you are near dying you got back half of your health '
+  m_text: 'If you are near dying you get back half of your health '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 509d21f4947a96e48a411ee9cb67c990, type: 2}
   m_sharedMaterial: {fileID: -3280892773538166253, guid: 509d21f4947a96e48a411ee9cb67c990, type: 2}
@@ -4266,7 +4306,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 315.66412, z: 0, w: 0}
+  m_margin: {x: 15.0703125, y: 315.66412, z: 21.349854, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0

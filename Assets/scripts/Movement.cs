@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
+    public score score;
     [Header("Movement & Combat")]
     public float speed = 5f;
     public float baseDamage = 10f;
@@ -94,6 +95,7 @@ public class Movement : MonoBehaviour
         if (isDashing && !hitEnemyThisDash && collision.gameObject.CompareTag("Enemy"))
         {
             hitEnemyThisDash = true;
+            score.timePassedBetweenDash = 0;
 
             if (activeDashCoroutine != null)
             {

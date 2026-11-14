@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class score : MonoBehaviour
 {
-    float timePassedBetweenDash;
+    public float timePassedBetweenDash;
     public EnemyHealthManager EHM;
     public float currentscore = 0;
     public float currentMult = 1;
@@ -20,14 +20,16 @@ public class score : MonoBehaviour
     public void scoreStreakSystem()
     {
         timePassedBetweenDash = Time.time;
-        if (EHM.hitsRemaining <= 0 && timePassedBetweenDash >= 1.5f)
+        if (EHM.HitsRemainging <= 0 && timePassedBetweenDash >= 1.5f)
         {
             scoreStreak++;
+            Debug.Log("Streak =" + scoreStreak);
+            timePassedBetweenDash = 0;
         }
         else
         {
             scoreStreak = 1;
-            timePassedBetweenDash = 0;
+            Debug.Log("Score Reset");
         }
     }
 }
