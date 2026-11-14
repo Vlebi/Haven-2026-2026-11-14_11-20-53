@@ -214,6 +214,7 @@ GameObject:
   - component: {fileID: 952725096}
   - component: {fileID: 952725095}
   - component: {fileID: 952725094}
+  - component: {fileID: 952725100}
   - component: {fileID: 952725093}
   - component: {fileID: 952725097}
   - component: {fileID: 952725098}
@@ -274,6 +275,26 @@ MonoBehaviour:
   isInvincible: 0
   speedBonusPerHit: 2
   damageBonusPerHit: 5
+--- !u!114 &952725100
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 952725092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce6c828dc17d6fd468087e2b27899e25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Attack
+  weapons:
+  - weaponName: short_swd
+    tile: {fileID: 11400000, guid: f9a967d2348301d47bd39040f588aff2, type: 2}
+    damageInHits: 1
+    offset: {x: 0.45, y: 0}
+    scale: {x: 1, y: 1, z: 1}
+    spriteAngleOffset: 0
+  startingWeaponIndex: 0
 --- !u!212 &952725095
 SpriteRenderer:
   serializedVersion: 2

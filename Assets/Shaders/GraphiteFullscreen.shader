@@ -8,9 +8,6 @@ Shader "Custom/Graphite Fullscreen"
 		_GrainStrength ("Pencil Grain", Range(0, 0.3)) = 0.012
 		_PaperStrength ("Paper Texture", Range(0, 0.3)) = 0.02
 		_HatchStrength ("Graphite Hatching", Range(0, 0.5)) = 0.005
-		_ColorPreservation ("Preserve Vivid Colors", Range(0, 1)) = 1
-		_ColorSaturationThreshold ("Color Saturation Threshold", Range(0, 0.5)) = 0.08
-		_ColorSaturationSoftness ("Color Transition Softness", Range(0.01, 0.5)) = 0.2
 	}
 
 	SubShader
@@ -38,9 +35,6 @@ Shader "Custom/Graphite Fullscreen"
 			float _GrainStrength;
 			float _PaperStrength;
 			float _HatchStrength;
-		float _ColorPreservation;
-		float _ColorSaturationThreshold;
-		float _ColorSaturationSoftness;
 
 			float LuminanceAt(float2 uv)
 			{
@@ -57,8 +51,7 @@ Shader "Custom/Graphite Fullscreen"
 			{
 				UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 				float2 uv = input.texcoord;
-				half4 source = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, uv);
-				float center = dot(source.rgb, float3(0.2126, 0.7152, 0.0722));
+				float center = LuminanceAt(uv);
 				float2 pixel = _BlitTexture_TexelSize.xy;
 
 				float horizontal = abs(LuminanceAt(uv + float2(pixel.x, 0)) - LuminanceAt(uv - float2(pixel.x, 0)));
@@ -82,13 +75,7 @@ Shader "Custom/Graphite Fullscreen"
 				graphite -= (hatchA + hatchB * 0.45) * darkArea * _HatchStrength;
 
 				graphite = saturate(graphite);
-				float maxChannel = max(source.r, max(source.g, source.b));
-				float minChannel = min(source.r, min(source.g, source.b));
-				float saturation = (maxChannel - minChannel) / max(maxChannel, 0.0001);
-				float colorMask = smoothstep(_ColorSaturationThreshold,
-					_ColorSaturationThreshold + _ColorSaturationSoftness, saturation) * _ColorPreservation;
-				float3 graphiteColor = lerp(float3(graphite, graphite, graphite), source.rgb, colorMask);
-				return half4(graphiteColor, source.a);
+				return half4(graphite, graphite, graphite, 1.0);
 			}
 			ENDHLSL
 		}
