@@ -48619,6 +48619,7 @@ GameObject:
   - component: {fileID: 1038862625}
   - component: {fileID: 1038862624}
   - component: {fileID: 1038862626}
+  - component: {fileID: 1038862627}
   m_Layer: 0
   m_Name: Gamemanager
   m_TagString: Untagged
@@ -48659,7 +48660,8 @@ Transform:
   m_LocalPosition: {x: 2.66294, y: -1.87571, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1069268105}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1038862626
@@ -48679,6 +48681,49 @@ MonoBehaviour:
   spawnInterval: 1.2
   spawnBuffer: 1
   maxEnemies: 30
+--- !u!114 &1038862627
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1038862623}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b5074cdbe4805243b6f16d662bf9dcf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::musicmanager
+--- !u!1 &1069268104
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1069268105}
+  m_Layer: 0
+  m_Name: music-sources
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1069268105
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1069268104}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1038862625}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1205856454
 GameObject:
   m_ObjectHideFlags: 0
@@ -52012,6 +52057,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HealthManager
   maxHealth: 100
+  currentHealth: 0
   movementcs: {fileID: 1536065569}
 --- !u!58 &1536065566
 CircleCollider2D:
@@ -52088,6 +52134,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce6c828dc17d6fd468087e2b27899e25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Attack
+  currentDamageBuff: 0
   weapons:
   - weaponName: short_swd
     tile: {fileID: 11400000, guid: f9a967d2348301d47bd39040f588aff2, type: 2}
@@ -52124,7 +52171,7 @@ MonoBehaviour:
     offset: {x: 0.7, y: 0}
     scale: {x: 3.2, y: 3.2, z: 1}
     spriteAngleOffset: -90
-  startingWeaponIndex: 1
+  startingWeaponIndex: 0
   behindEnemySearchDistance: 1.25
   behindEnemySideTolerance: 0.4
   hammerSplashRadius: 0.75

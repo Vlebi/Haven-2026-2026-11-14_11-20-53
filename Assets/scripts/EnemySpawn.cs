@@ -3,6 +3,8 @@ using UnityEngine.SceneManagement;
 
 public class EnemySpawn : MonoBehaviour
 {
+    private const int SpawnPositionAttempts = 30;
+
     [Header("Settings")]
     public GameObject enemyPrefab;
     public string enemySceneName = "map";
@@ -29,8 +31,8 @@ public class EnemySpawn : MonoBehaviour
 
         if (timer >= spawnInterval)
         {
-            SpawnEnemyToScene();
-            spawnedCount++; // Hozzáadunk egyet a számlálóhoz
+            if (SpawnEnemyToScene())
+                spawnedCount++;
             timer = 0f;
         }
     }
@@ -40,43 +42,101 @@ public class EnemySpawn : MonoBehaviour
         spawnedCount --;
     }
 
-    private void SpawnEnemyToScene()
+    private bool SpawnEnemyToScene()
     {
         Scene targetScene = SceneManager.GetSceneByName(enemySceneName);
 
-        if (targetScene.IsValid() && targetScene.isLoaded)
-        {
-            Vector3 spawnPos = GetOffScreenPosition();
-
-            GameObject newEnemy = Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
-            SceneManager.MoveGameObjectToScene(newEnemy, targetScene);
-        }
-        else
+        if (!targetScene.IsValid() || !targetScene.isLoaded)
         {
             Debug.LogWarning($"The {enemySceneName} Scene is not loaded!");
+            return false;
         }
+
+        if (enemyPrefab == null)
+        {
+            Debug.LogWarning("EnemySpawn has no enemy prefab assigned.", this);
+            return false;
+        }
+
+        if (!TryGetSpawnPosition(out Vector3 spawnPosition))
+        {
+            Debug.LogWarning("Could not find a clear enemy spawn position inside the camera bounds.", this);
+            return false;
+        }
+
+        GameObject newEnemy = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
+        SceneManager.MoveGameObjectToScene(newEnemy, targetScene);
+        return true;
     }
 
-    private Vector3 GetOffScreenPosition()
+    private bool TryGetSpawnPosition(out Vector3 spawnPosition)
     {
-        if (Camera.main == null) return Vector3.zero;
-
+        spawnPosition = Vector3.zero;
         Camera cam = Camera.main;
-        float camHeight = cam.orthographicSize;
-        float camWidth = camHeight * cam.aspect;
+        if (cam == null || enemyPrefab == null)
+            return false;
 
-        float spawnX = 0f;
-        float spawnY = 0f;
+        float cameraDepth = Mathf.Abs(cam.transform.position.z);
+        Vector3 bottomLeft = cam.ViewportToWorldPoint(new Vector3(0f, 0f, cameraDepth));
+        Vector3 topRight = cam.ViewportToWorldPoint(new Vector3(1f, 1f, cameraDepth));
 
-        int side = Random.Range(0, 4);
-        switch (side)
+        Collider2D enemyCollider = enemyPrefab.GetComponent<Collider2D>();
+        Vector2 footprintSize = enemyCollider != null
+            ? enemyCollider.bounds.size
+            : Vector2.one * 0.5f;
+        Vector2 colliderOffset = enemyCollider != null
+            ? (Vector2)(enemyCollider.bounds.center - enemyPrefab.transform.position)
+            : Vector2.zero;
+
+        float marginX = Mathf.Max(spawnBuffer, footprintSize.x * 0.5f);
+        float marginY = Mathf.Max(spawnBuffer, footprintSize.y * 0.5f);
+        for (int attempt = 0; attempt < SpawnPositionAttempts; attempt++)
         {
-            case 0: spawnX = Random.Range(-camWidth, camWidth); spawnY = camHeight + spawnBuffer; break;
-            case 1: spawnX = camWidth + spawnBuffer; spawnY = Random.Range(-camHeight, camHeight); break;
-            case 2: spawnX = Random.Range(-camWidth, camWidth); spawnY = -(camHeight + spawnBuffer); break;
-            case 3: spawnX = -(camWidth + spawnBuffer); spawnY = Random.Range(-camHeight, camHeight); break;
+            Vector2 candidate;
+            switch (Random.Range(0, 4))
+            {
+                case 0:
+                    candidate = new Vector2(
+                        Random.Range(bottomLeft.x, topRight.x),
+                        topRight.y + marginY);
+                    break;
+                case 1:
+                    candidate = new Vector2(
+                        topRight.x + marginX,
+                        Random.Range(bottomLeft.y, topRight.y));
+                    break;
+                case 2:
+                    candidate = new Vector2(
+                        Random.Range(bottomLeft.x, topRight.x),
+                        bottomLeft.y - marginY);
+                    break;
+                default:
+                    candidate = new Vector2(
+                        bottomLeft.x - marginX,
+                        Random.Range(bottomLeft.y, topRight.y));
+                    break;
+            }
+
+            Vector2 colliderCenter = candidate + colliderOffset;
+            Collider2D[] overlaps = Physics2D.OverlapBoxAll(colliderCenter, footprintSize, 0f);
+            bool isBlocked = false;
+
+            foreach (Collider2D overlap in overlaps)
+            {
+                if (overlap != null && overlap.enabled && !overlap.isTrigger)
+                {
+                    isBlocked = true;
+                    break;
+                }
+            }
+
+            if (isBlocked)
+                continue;
+
+            spawnPosition = new Vector3(candidate.x, candidate.y, 0f);
+            return true;
         }
 
-        return new Vector3(cam.transform.position.x + spawnX, cam.transform.position.y + spawnY, 0f);
+        return false;
     }
 }
