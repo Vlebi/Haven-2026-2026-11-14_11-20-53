@@ -1,6 +1,6 @@
 using System.Collections;
 using UnityEngine;
-
+//balls, greasy ones in fact
 public class Movement : MonoBehaviour
 {
     public score score;
