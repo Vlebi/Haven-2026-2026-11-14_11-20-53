@@ -58,7 +58,7 @@ public class EnemySpawn : MonoBehaviour
             return false;
         }
 
-        if (!TryGetSpawnPosition(out Vector3 spawnPosition))
+        if (!TryGetSpawnPosition(targetScene, out Vector3 spawnPosition))
         {
             Debug.LogWarning("Could not find a clear enemy spawn position inside the camera bounds.", this);
             return false;
@@ -69,12 +69,18 @@ public class EnemySpawn : MonoBehaviour
         return true;
     }
 
-    private bool TryGetSpawnPosition(out Vector3 spawnPosition)
+    private bool TryGetSpawnPosition(Scene targetScene, out Vector3 spawnPosition)
     {
         spawnPosition = Vector3.zero;
         Camera cam = Camera.main;
         if (cam == null || enemyPrefab == null)
             return false;
+
+        if (!TryGetMapBounds(targetScene, out Bounds mapBounds))
+        {
+            Debug.LogWarning("Could not find wall collider bounds in the enemy scene.", this);
+            return false;
+        }
 
         float cameraDepth = Mathf.Abs(cam.transform.position.z);
         Vector3 bottomLeft = cam.ViewportToWorldPoint(new Vector3(0f, 0f, cameraDepth));
@@ -90,32 +96,18 @@ public class EnemySpawn : MonoBehaviour
 
         float marginX = Mathf.Max(spawnBuffer, footprintSize.x * 0.5f);
         float marginY = Mathf.Max(spawnBuffer, footprintSize.y * 0.5f);
+        float minX = mapBounds.min.x + footprintSize.x * 0.5f - colliderOffset.x;
+        float maxX = mapBounds.max.x - footprintSize.x * 0.5f - colliderOffset.x;
+        float minY = mapBounds.min.y + footprintSize.y * 0.5f - colliderOffset.y;
+        float maxY = mapBounds.max.y - footprintSize.y * 0.5f - colliderOffset.y;
+
         for (int attempt = 0; attempt < SpawnPositionAttempts; attempt++)
         {
-            Vector2 candidate;
-            switch (Random.Range(0, 4))
-            {
-                case 0:
-                    candidate = new Vector2(
-                        Random.Range(bottomLeft.x, topRight.x),
-                        topRight.y + marginY);
-                    break;
-                case 1:
-                    candidate = new Vector2(
-                        topRight.x + marginX,
-                        Random.Range(bottomLeft.y, topRight.y));
-                    break;
-                case 2:
-                    candidate = new Vector2(
-                        Random.Range(bottomLeft.x, topRight.x),
-                        bottomLeft.y - marginY);
-                    break;
-                default:
-                    candidate = new Vector2(
-                        bottomLeft.x - marginX,
-                        Random.Range(bottomLeft.y, topRight.y));
-                    break;
-            }
+            if (!TryGetCandidatePosition(
+                    Random.Range(0, 4), bottomLeft, topRight,
+                    minX, maxX, minY, maxY, marginX, marginY,
+                    colliderOffset, out Vector2 candidate))
+                continue;
 
             Vector2 colliderCenter = candidate + colliderOffset;
             Collider2D[] overlaps = Physics2D.OverlapBoxAll(colliderCenter, footprintSize, 0f);
@@ -138,5 +130,88 @@ public class EnemySpawn : MonoBehaviour
         }
 
         return false;
+    }
+
+    private bool TryGetMapBounds(Scene targetScene, out Bounds mapBounds)
+    {
+        mapBounds = default;
+        int wallLayer = LayerMask.NameToLayer("wall");
+        if (wallLayer < 0)
+            return false;
+
+        bool foundBounds = false;
+        Renderer[] mapRenderers = FindObjectsByType<Renderer>(FindObjectsSortMode.None);
+        foreach (Renderer mapRenderer in mapRenderers)
+        {
+            if (!mapRenderer.enabled || !mapRenderer.gameObject.activeInHierarchy ||
+                mapRenderer.gameObject.scene != targetScene || mapRenderer.gameObject.layer != wallLayer)
+                continue;
+
+            if (!foundBounds)
+            {
+                mapBounds = mapRenderer.bounds;
+                foundBounds = true;
+            }
+            else
+            {
+                mapBounds.Encapsulate(mapRenderer.bounds);
+            }
+        }
+
+        return foundBounds && mapBounds.size.x > 0f && mapBounds.size.y > 0f;
+    }
+
+    private bool TryGetCandidatePosition(
+        int edge,
+        Vector3 cameraBottomLeft,
+        Vector3 cameraTopRight,
+        float mapMinX,
+        float mapMaxX,
+        float mapMinY,
+        float mapMaxY,
+        float marginX,
+        float marginY,
+        Vector2 colliderOffset,
+        out Vector2 candidate)
+    {
+        candidate = Vector2.zero;
+        float minX;
+        float maxX;
+        float minY;
+        float maxY;
+
+        switch (edge)
+        {
+            case 0:
+                minX = Mathf.Max(mapMinX, cameraBottomLeft.x - colliderOffset.x);
+                maxX = Mathf.Min(mapMaxX, cameraTopRight.x - colliderOffset.x);
+                minY = cameraTopRight.y + marginY - colliderOffset.y;
+                maxY = mapMaxY;
+                break;
+            case 1:
+                minX = cameraTopRight.x + marginX - colliderOffset.x;
+                maxX = mapMaxX;
+                minY = Mathf.Max(mapMinY, cameraBottomLeft.y - colliderOffset.y);
+                maxY = Mathf.Min(mapMaxY, cameraTopRight.y - colliderOffset.y);
+                break;
+            case 2:
+                minX = Mathf.Max(mapMinX, cameraBottomLeft.x - colliderOffset.x);
+                maxX = Mathf.Min(mapMaxX, cameraTopRight.x - colliderOffset.x);
+                minY = mapMinY;
+                maxY = cameraBottomLeft.y - marginY - colliderOffset.y;
+                break;
+            default:
+                minX = mapMinX;
+                maxX = cameraBottomLeft.x - marginX - colliderOffset.x;
+                minY = Mathf.Max(mapMinY, cameraBottomLeft.y - colliderOffset.y);
+                maxY = Mathf.Min(mapMaxY, cameraTopRight.y - colliderOffset.y);
+                break;
+        }
+
+        if (minX > maxX || minY > maxY)
+            return false;
+
+        candidate = new Vector2(Random.Range(minX, maxX), Random.Range(minY, maxY));
+        return true;
     }
 }
