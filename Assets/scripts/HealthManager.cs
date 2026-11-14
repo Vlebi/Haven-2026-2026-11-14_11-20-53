@@ -8,11 +8,11 @@ public class HealthManager : MonoBehaviour
 
     void Start()
     {
-        // Játék indulásakor az aktuális életerő a maximumon van
+        
         currentHealth = maxHealth;
     }
 
-    // Ezt a függvényt fogja meghívni a barátod kódja (pl. a lövedék vagy a kard)
+    
     public void TakeDamage(int damageAmount)
     {
         currentHealth -= damageAmount;
