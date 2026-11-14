@@ -26,10 +26,16 @@ public class EnemyHealthManager : MonoBehaviour
         hitsRemaining -= Mathf.Max(1, hitDamage);
         if (hitsRemaining <= 0)
         {
-            enemySpawn.LowerSpawnedCount();
+            if (enemySpawn == null)
+                enemySpawn = FindFirstObjectByType<EnemySpawn>();
+
+            if (enemySpawn != null)
+                enemySpawn.LowerSpawnedCount();
+            else
+                Debug.LogWarning("No EnemySpawn was found to update the spawned enemy count.", this);
+
             Destroy(gameObject);
             return;
-            
         }
 
         StartHitReaction();
