@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class CardsScript : MonoBehaviour
 {
+    public HealthManager hm;
     public void Lifesteal()
     {
 
@@ -16,7 +17,10 @@ public class CardsScript : MonoBehaviour
     }
     public void HalfHealthBack()
     {
-
+        if(hm.currentHealth <= 10)
+        {
+            hm.currentHealth = hm.maxHealth / 2;
+        }
     }
     public void Jackpot()
     {
