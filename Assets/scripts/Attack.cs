@@ -1,19 +1,44 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using System.Collections.Generic;
 
 public class Attack : MonoBehaviour
 {
-    [SerializeField] private TileBase startingWeaponTile;
-    [SerializeField] private Vector2 weaponOffset = new Vector2(0.45f, 0f);
-    [SerializeField] private float weaponSpriteAngleOffset;
+    [System.Serializable]
+    public class WeaponDefinition
+    {
+        public string weaponName;
+        public TileBase tile;
+        [Min(0)] public int tier = 1;
+        [Min(1)] public int damageInHits = 1;
+        public Vector2 offset = new Vector2(0.45f, 0f);
+        public Vector3 scale = Vector3.one;
+        public float spriteAngleOffset;
+    }
+
+    [SerializeField] private List<WeaponDefinition> weapons = new List<WeaponDefinition>();
+    [SerializeField] private int startingWeaponIndex;
+    [SerializeField, Min(0f)] private float behindEnemySearchDistance = 1.25f;
+    [SerializeField, Min(0f)] private float behindEnemySideTolerance = 0.4f;
+    [SerializeField, Min(0f)] private float hammerSplashRadius = 0.75f;
 
     private Camera cam;
     private Transform aimPivot;
+    private Transform weaponTransform;
+    private SpriteRenderer weaponRenderer;
+    private BoxCollider2D weaponHitbox;
+    private int equippedWeaponIndex = -1;
+
+    private WeaponDefinition EquippedWeapon =>
+        equippedWeaponIndex >= 0 && equippedWeaponIndex < weapons.Count
+            ? weapons[equippedWeaponIndex]
+            : null;
 
     private void Start()
     {
         cam = Camera.main;
         CreateAimVisuals();
+        EquipWeapon(startingWeaponIndex);
     }
 
     private void LateUpdate()
@@ -37,11 +62,96 @@ public class Attack : MonoBehaviour
         aimPivot.rotation = Quaternion.Euler(0f, 0f, angle);
     }
 
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        WeaponDefinition weapon = EquippedWeapon;
+        if (weapon == null)
+            return;
+
+        EnemyHealthManager target = GetEnemyHealth(other);
+        if (target == null)
+            return;
+
+        target.TakeSwordHit(weapon.damageInHits);
+
+        switch (weapon.weaponName)
+        {
+            case "flimsy_spr":
+                DamageEnemyBehind(target, 1);
+                break;
+            case "spear":
+                DamageEnemyBehind(target, 3);
+                break;
+            case "hammer":
+                DamageNearbyEnemies(target, 3);
+                break;
+        }
+    }
+
+    private EnemyHealthManager GetEnemyHealth(Collider2D collider)
+    {
+        EnemyHealthManager enemyHealth = collider.GetComponentInParent<EnemyHealthManager>();
+        return enemyHealth != null && enemyHealth.gameObject.CompareTag("Enemy") ? enemyHealth : null;
+    }
+
+    private void DamageEnemyBehind(EnemyHealthManager target, int damageInHits)
+    {
+        Vector2 direction = (Vector2)target.transform.position - (Vector2)transform.position;
+        if (direction.sqrMagnitude < 0.0001f)
+            return;
+        direction.Normalize();
+
+        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(
+            target.transform.position,
+            behindEnemySearchDistance + behindEnemySideTolerance);
+
+        EnemyHealthManager nearestBehind = null;
+        float nearestDistance = float.MaxValue;
+        HashSet<EnemyHealthManager> checkedEnemies = new HashSet<EnemyHealthManager>();
+
+        foreach (Collider2D collider in nearbyColliders)
+        {
+            EnemyHealthManager candidate = GetEnemyHealth(collider);
+            if (candidate == null || candidate == target || !checkedEnemies.Add(candidate))
+                continue;
+
+            Vector2 offset = (Vector2)candidate.transform.position - (Vector2)target.transform.position;
+            float forwardDistance = Vector2.Dot(offset, direction);
+            float sideDistance = Mathf.Abs(direction.x * offset.y - direction.y * offset.x);
+            if (forwardDistance <= 0.05f || forwardDistance > behindEnemySearchDistance ||
+                sideDistance > behindEnemySideTolerance)
+                continue;
+
+            if (forwardDistance < nearestDistance)
+            {
+                nearestDistance = forwardDistance;
+                nearestBehind = candidate;
+            }
+        }
+
+        if (nearestBehind != null)
+            nearestBehind.TakeSwordHit(damageInHits);
+    }
+
+    private void DamageNearbyEnemies(EnemyHealthManager target, int damageInHits)
+    {
+        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(target.transform.position, hammerSplashRadius);
+        HashSet<EnemyHealthManager> damagedEnemies = new HashSet<EnemyHealthManager>();
+
+        foreach (Collider2D collider in nearbyColliders)
+        {
+            EnemyHealthManager candidate = GetEnemyHealth(collider);
+            if (candidate == null || candidate == target || !damagedEnemies.Add(candidate))
+                continue;
+
+            candidate.TakeSwordHit(damageInHits);
+        }
+    }
+
     private void CreateAimVisuals()
     {
         SpriteRenderer originalRenderer = GetComponent<SpriteRenderer>();
-        Tile weaponTile = startingWeaponTile as Tile;
-        if (originalRenderer == null || weaponTile == null || weaponTile.sprite == null)
+        if (originalRenderer == null)
             return;
 
         aimPivot = new GameObject("AimPivot").transform;
@@ -61,16 +171,36 @@ public class Attack : MonoBehaviour
         characterRenderer.spriteSortPoint = originalRenderer.spriteSortPoint;
         originalRenderer.enabled = false;
 
-        GameObject weapon = new GameObject("ShortSword");
-        weapon.transform.SetParent(aimPivot, false);
-        weapon.transform.localPosition = weaponOffset;
-        weapon.transform.localRotation = Quaternion.Euler(0f, 0f, weaponSpriteAngleOffset);
+        GameObject weapon = new GameObject("Weapon");
+        weaponTransform = weapon.transform;
+        weaponTransform.SetParent(aimPivot, false);
 
-        SpriteRenderer weaponRenderer = weapon.AddComponent<SpriteRenderer>();
-        weaponRenderer.sprite = weaponTile.sprite;
+        weaponRenderer = weapon.AddComponent<SpriteRenderer>();
         weaponRenderer.color = Color.white;
         weaponRenderer.sharedMaterial = originalRenderer.sharedMaterial;
         weaponRenderer.sortingLayerID = originalRenderer.sortingLayerID;
         weaponRenderer.sortingOrder = originalRenderer.sortingOrder + 1;
+
+        weaponHitbox = weapon.AddComponent<BoxCollider2D>();
+        weaponHitbox.isTrigger = true;
+    }
+
+    public bool EquipWeapon(int weaponIndex)
+    {
+        if (weaponIndex < 0 || weaponIndex >= weapons.Count || weaponRenderer == null)
+            return false;
+
+        WeaponDefinition weapon = weapons[weaponIndex];
+        Tile tile = weapon.tile as Tile;
+        if (tile == null || tile.sprite == null)
+            return false;
+
+        equippedWeaponIndex = weaponIndex;
+        weaponRenderer.sprite = tile.sprite;
+        weaponTransform.localPosition = weapon.offset;
+        weaponTransform.localScale = weapon.scale;
+        weaponTransform.localRotation = Quaternion.Euler(0f, 0f, weapon.spriteAngleOffset);
+        weaponHitbox.size = tile.sprite.bounds.size;
+        return true;
     }
 }

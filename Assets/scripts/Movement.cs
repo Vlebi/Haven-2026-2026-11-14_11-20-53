@@ -13,7 +13,7 @@ public class Movement : MonoBehaviour
     [SerializeField] private float bounceForce = 12f;
     [SerializeField] private float bounceDuration = 0.15f;
     [SerializeField] private float stunDuration = 3f;
-    private bool isInvincible = false;
+    public bool isInvincible = false;
 
     [Header("Combo")]
     [SerializeField] private float speedBonusPerHit = 2f;
@@ -24,27 +24,34 @@ public class Movement : MonoBehaviour
     private Vector2 movement;
     private float horizontal;
     private float vertical;
+
     private bool canDash = true;
     private bool isDashing;
     private bool isStunned;
     private bool hitEnemyThisDash;
     private int comboStacks = 0;
+
     private Vector2 lastDashDirection;
     private Coroutine activeDashCoroutine;
-    public float CurrentSpeed => speed + (comboStacks * speedBonusPerHit);
+
+    public float CurrentDSpeed => dashSpeed + (comboStacks * speedBonusPerHit);
     public float CurrentDamage => baseDamage + (comboStacks * damageBonusPerHit);
+
     void Start()
     {
         cam = Camera.main;
         rb = GetComponent<Rigidbody2D>();
     }
+
     void Update()
     {
         if (isDashing || isStunned) return;
+
         if (Input.GetMouseButtonDown(0) && canDash)
         {
             activeDashCoroutine = StartCoroutine(DashTowardsMouse());
         }
+
         horizontal = Input.GetAxisRaw("Horizontal");
         vertical = Input.GetAxisRaw("Vertical");
     }
@@ -52,26 +59,37 @@ public class Movement : MonoBehaviour
     void FixedUpdate()
     {
         if (isDashing || isStunned) return;
+
         movement = new Vector2(horizontal, vertical).normalized;
-        rb.linearVelocity = movement * CurrentSpeed;
+        rb.linearVelocity = movement * speed;
     }
 
     private IEnumerator DashTowardsMouse()
     {
+        isInvincible = true;
         canDash = false;
         isDashing = true;
         hitEnemyThisDash = false;
+
         Vector3 mouseWorldPos = cam.ScreenToWorldPoint(Input.mousePosition);
         mouseWorldPos.z = transform.position.z;
         lastDashDirection = (mouseWorldPos - transform.position).normalized;
-        rb.linearVelocity = lastDashDirection * dashSpeed;
+
+        rb.linearVelocity = lastDashDirection * CurrentDSpeed;
+
         yield return new WaitForSeconds(dashDuration);
+
         if (!hitEnemyThisDash)
         {
             rb.linearVelocity = Vector2.zero;
             isDashing = false;
+            isInvincible = false;
             comboStacks = 0;
             StartCoroutine(StunPlayer());
+        }
+        if(Time.deltaTime >= 1.5f)
+        {
+            comboStacks = 0;
         }
     }
 
@@ -80,10 +98,12 @@ public class Movement : MonoBehaviour
         if (isDashing && !hitEnemyThisDash && collision.gameObject.CompareTag("Enemy"))
         {
             hitEnemyThisDash = true;
+
             if (activeDashCoroutine != null)
             {
                 StopCoroutine(activeDashCoroutine);
             }
+
             comboStacks++;
             StartCoroutine(BounceBack());
         }
@@ -92,18 +112,25 @@ public class Movement : MonoBehaviour
     private IEnumerator BounceBack()
     {
         rb.linearVelocity = -lastDashDirection * bounceForce;
+
         yield return new WaitForSeconds(bounceDuration);
+
         rb.linearVelocity = Vector2.zero;
         isDashing = false;
         canDash = true;
+        isInvincible = false;
     }
 
     private IEnumerator StunPlayer()
     {
+        comboStacks = 0;
         isStunned = true;
         rb.linearVelocity = Vector2.zero;
+
         yield return new WaitForSeconds(stunDuration);
+
         isStunned = false;
         canDash = true;
+        isInvincible = false;
     }
 }
