@@ -90,16 +90,33 @@ public class EnemySpawn : MonoBehaviour
 
         float marginX = Mathf.Max(spawnBuffer, footprintSize.x * 0.5f);
         float marginY = Mathf.Max(spawnBuffer, footprintSize.y * 0.5f);
-        float minX = bottomLeft.x + marginX;
-        float maxX = topRight.x - marginX;
-        float minY = bottomLeft.y + marginY;
-        float maxY = topRight.y - marginY;
-        if (minX > maxX || minY > maxY)
-            return false;
-
         for (int attempt = 0; attempt < SpawnPositionAttempts; attempt++)
         {
-            Vector2 candidate = new Vector2(Random.Range(minX, maxX), Random.Range(minY, maxY));
+            Vector2 candidate;
+            switch (Random.Range(0, 4))
+            {
+                case 0:
+                    candidate = new Vector2(
+                        Random.Range(bottomLeft.x, topRight.x),
+                        topRight.y + marginY);
+                    break;
+                case 1:
+                    candidate = new Vector2(
+                        topRight.x + marginX,
+                        Random.Range(bottomLeft.y, topRight.y));
+                    break;
+                case 2:
+                    candidate = new Vector2(
+                        Random.Range(bottomLeft.x, topRight.x),
+                        bottomLeft.y - marginY);
+                    break;
+                default:
+                    candidate = new Vector2(
+                        bottomLeft.x - marginX,
+                        Random.Range(bottomLeft.y, topRight.y));
+                    break;
+            }
+
             Vector2 colliderCenter = candidate + colliderOffset;
             Collider2D[] overlaps = Physics2D.OverlapBoxAll(colliderCenter, footprintSize, 0f);
             bool isBlocked = false;
