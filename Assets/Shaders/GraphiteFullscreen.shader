@@ -3,6 +3,7 @@ Shader "Custom/Graphite Fullscreen"
 	Properties
 	{
 		_Contrast ("Contrast", Range(1, 4)) = 1.15
+		_ColorPreservation ("Color Preservation", Range(0, 1)) = 0.9
 		_EdgeStrength ("Outline Strength", Range(0, 3)) = 0.12
 		_EdgeThreshold ("Outline Threshold", Range(0.005, 0.2)) = 0.16
 		_GrainStrength ("Pencil Grain", Range(0, 0.3)) = 0.012
@@ -30,6 +31,7 @@ Shader "Custom/Graphite Fullscreen"
 			#include "Packages/com.unity.render-pipelines.core/Runtime/Utilities/Blit.hlsl"
 
 			float _Contrast;
+			float _ColorPreservation;
 			float _EdgeStrength;
 			float _EdgeThreshold;
 			float _GrainStrength;
@@ -51,6 +53,7 @@ Shader "Custom/Graphite Fullscreen"
 			{
 				UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 				float2 uv = input.texcoord;
+				half3 sourceColor = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, uv).rgb;
 				float center = LuminanceAt(uv);
 				float2 pixel = _BlitTexture_TexelSize.xy;
 
@@ -75,7 +78,14 @@ Shader "Custom/Graphite Fullscreen"
 				graphite -= (hatchA + hatchB * 0.45) * darkArea * _HatchStrength;
 
 				graphite = saturate(graphite);
-				return half4(graphite, graphite, graphite, 1.0);
+
+				float chroma = max(sourceColor.r, max(sourceColor.g, sourceColor.b)) -
+					min(sourceColor.r, min(sourceColor.g, sourceColor.b));
+				float preserveColor = smoothstep(0.025, 0.2, chroma) * _ColorPreservation;
+				float graphiteShade = saturate(graphite / max(center, 0.001));
+				half3 coloredGraphite = sourceColor * graphiteShade;
+				half3 outputColor = lerp(graphite.xxx, coloredGraphite, preserveColor);
+				return half4(outputColor, 1.0);
 			}
 			ENDHLSL
 		}
