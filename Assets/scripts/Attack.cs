@@ -16,7 +16,9 @@ public class Attack : MonoBehaviour
         public float spriteAngleOffset;
     }
 
-    [SerializeField] private List<WeaponDefinition> weapons = new List<WeaponDefinition>();
+    public int currentDamageBuff = 0;
+
+    [SerializeField] public List<WeaponDefinition> weapons = new List<WeaponDefinition>();
     [SerializeField] private int startingWeaponIndex;
     [SerializeField, Min(0f)] private float behindEnemySearchDistance = 1.25f;
     [SerializeField, Min(0f)] private float behindEnemySideTolerance = 0.4f;
@@ -31,7 +33,7 @@ public class Attack : MonoBehaviour
     private BoxCollider2D weaponHitbox;
     private int equippedWeaponIndex = -1;
 
-    private WeaponDefinition EquippedWeapon =>
+    public WeaponDefinition EquippedWeapon =>
         equippedWeaponIndex >= 0 && equippedWeaponIndex < weapons.Count
             ? weapons[equippedWeaponIndex]
             : null;
@@ -126,7 +128,7 @@ public class Attack : MonoBehaviour
         if (target == null)
             return;
 
-        target.TakeSwordHit(weapon.damageInHits);
+        target.TakeSwordHit(weapon.damageInHits + currentDamageBuff);
 
         switch (weapon.weaponName)
         {
