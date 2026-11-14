@@ -7,6 +7,9 @@ public class InteractUI : MonoBehaviour
     public float detectionRange = 2.5f; 
     public string interactTag = "Interactable";
 
+    public TMPro.TMP_Text scoreText;
+    score score;
+
     void Start()
     {
         
@@ -20,7 +23,8 @@ public class InteractUI : MonoBehaviour
     {
         if (interactImageUI == null) return;
 
-        
+        scoreText.text = "Score: " + score.currentscore.ToString("F0");
+
         GameObject[] interactables = GameObject.FindGameObjectsWithTag(interactTag);
         bool isNearSomething = false;
 
@@ -40,5 +44,10 @@ public class InteractUI : MonoBehaviour
         {
             interactImageUI.SetActive(isNearSomething);
         }
+        else if (interactImageUI.activeSelf && !isNearSomething)
+        {
+            interactImageUI.SetActive(false);
+        }
+
     }
 }
