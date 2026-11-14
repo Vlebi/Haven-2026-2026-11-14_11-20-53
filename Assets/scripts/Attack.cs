@@ -31,7 +31,7 @@ public class Attack : MonoBehaviour
     private Transform weaponTransform;
     private SpriteRenderer weaponRenderer;
     private BoxCollider2D weaponHitbox;
-    private int equippedWeaponIndex = -1;
+    public int equippedWeaponIndex = -1;
 
     public WeaponDefinition EquippedWeapon =>
         equippedWeaponIndex >= 0 && equippedWeaponIndex < weapons.Count

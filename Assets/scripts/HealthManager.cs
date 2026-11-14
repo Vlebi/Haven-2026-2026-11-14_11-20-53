@@ -6,6 +6,7 @@ public class HealthManager : MonoBehaviour
     public int maxHealth = 100;
     public int currentHealth;
     public Movement movementcs;
+    public float shieldHealth;
 
     void Start()
     {
