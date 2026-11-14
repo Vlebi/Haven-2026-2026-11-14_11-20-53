@@ -4,6 +4,8 @@ public class EnemyMovement : MonoBehaviour
 {
     [Header("Mozgás Beállítások")]
     public float speed = 0.7f;
+    public float speedMultiplayer = 1f;
+    public float currentspeed => speed * speedMultiplayer;
     public string targetName = "char1";
 
     [Header("Forgás Beállítások")]
