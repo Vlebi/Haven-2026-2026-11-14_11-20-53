@@ -3,7 +3,7 @@ using UnityEngine;
 public class EnemyMovement : MonoBehaviour
 {
     [Header("Mozgás Beállítások")]
-    public float speed = 3f;
+    public float speed = 0.7f;
     public string targetName = "char1";
 
     [Header("Forgás Beállítások")]

@@ -48669,7 +48669,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1038862623}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a01927fcd370c06469ce257690250256, type: 3}
   m_Name: 
@@ -51948,7 +51948,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.716, y: -0.257, z: 0}
-  m_LocalScale: {x: 0.3, y: 0.3, z: 1}
+  m_LocalScale: {x: 0.4, y: 0.4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -52012,6 +52012,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HealthManager
   maxHealth: 100
+  movementcs: {fileID: 1536065569}
 --- !u!58 &1536065566
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -52090,11 +52091,18 @@ MonoBehaviour:
   weapons:
   - weaponName: short_swd
     tile: {fileID: 11400000, guid: f9a967d2348301d47bd39040f588aff2, type: 2}
-    tier: 1
+    tier: 0
     damageInHits: 1
     offset: {x: 0.45, y: 0}
-    scale: {x: 1, y: 1, z: 1}
-    spriteAngleOffset: 0
+    scale: {x: 3, y: 3, z: 1}
+    spriteAngleOffset: -90
+  - weaponName: short_swd
+    tile: {fileID: 11400000, guid: 67d85a26138f0d34280b1d7a84c1d797, type: 2}
+    tier: 1
+    damageInHits: 2
+    offset: {x: 0.45, y: 0}
+    scale: {x: 3, y: 3, z: 1}
+    spriteAngleOffset: -90
   startingWeaponIndex: 0
   behindEnemySearchDistance: 1.25
   behindEnemySideTolerance: 0.4
