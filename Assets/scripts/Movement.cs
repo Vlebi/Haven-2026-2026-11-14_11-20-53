@@ -87,10 +87,6 @@ public class Movement : MonoBehaviour
             comboStacks = 0;
             StartCoroutine(StunPlayer());
         }
-        if(Time.deltaTime >= 1.5f)
-        {
-            comboStacks = 0;
-        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
