@@ -251,7 +251,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.24, y: -2.81, z: -13}
+  m_LocalPosition: {x: 0.33405, y: -2.68685, z: -13}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -306,7 +306,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &619394801
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -387,6 +387,7 @@ GameObject:
   - component: {fileID: 952725094}
   - component: {fileID: 952725093}
   - component: {fileID: 952725097}
+  - component: {fileID: 952725098}
   m_Layer: 0
   m_Name: char1
   m_TagString: Untagged
@@ -433,8 +434,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8ed1de288ea85c4cbe8a0bf5fa671fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Movement
-  rb: {fileID: 952725093}
   speed: 1
+  baseDamage: 10
+  dashSpeed: 20
+  dashDuration: 0.2
+  bounceForce: 12
+  bounceDuration: 0.15
+  stunDuration: 3
+  speedBonusPerHit: 2
+  damageBonusPerHit: 5
 --- !u!212 &952725095
 SpriteRenderer:
   serializedVersion: 2
@@ -545,6 +553,21 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: -0.01549083, y: 0}
   m_Radius: 0.49018198
+--- !u!114 &952725098
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 952725092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce6c828dc17d6fd468087e2b27899e25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Attack
+  startingWeaponTile: {fileID: 11400000, guid: f9a967d2348301d47bd39040f588aff2, type: 2}
+  weaponOffset: {x: 0.45, y: 0}
+  weaponSpriteAngleOffset: 0
 --- !u!1 &2033702387
 GameObject:
   m_ObjectHideFlags: 0
@@ -646,7 +669,7 @@ Transform:
   m_GameObject: {fileID: 2033702387}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.24, y: -2.81, z: -13}
+  m_LocalPosition: {x: 0.33405, y: -2.68685, z: -13}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

@@ -38,6 +38,7 @@ public class Movement : MonoBehaviour
         cam = Camera.main;
         rb = GetComponent<Rigidbody2D>();
     }
+
     void Update()
     {
         if (isDashing || isStunned) return;
