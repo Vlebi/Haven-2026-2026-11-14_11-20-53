@@ -3,6 +3,7 @@ using UnityEngine;
 public class CardsScript : MonoBehaviour
 {
     public HealthManager hm;
+    public Attack atk;
     public void Lifesteal()
     {
 
@@ -24,7 +25,8 @@ public class CardsScript : MonoBehaviour
     }
     public void Jackpot()
     {
-
+        atk.currentDamageBuff = (int)(atk.currentDamageBuff + 0.5);
+        hm.maxHealth = hm.maxHealth + 20;
     }
     public void TierPlus()
     {
