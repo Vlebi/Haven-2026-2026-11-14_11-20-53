@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using TMPro;
 
 [System.Serializable]
 public class Wave
@@ -26,10 +27,13 @@ public class WaveSystemManager : MonoBehaviour
 
     public int currentWaveIndex = 0;
     private bool isWaveActive = false;
+    private TMP_Text currentWaveText;
 
     void Start()
     {
         currentWaveIndex = BedScript.LoadSavedWave();
+        currentWaveText = RuntimeHudText.GetOrCreate("CurrentWaveText", "Wave: 1", new Vector2(20f, -60f));
+        UpdateCurrentWaveText();
         StartCoroutine(StartNextWave());
     }
 
@@ -54,7 +58,15 @@ public class WaveSystemManager : MonoBehaviour
         else
         {
             Debug.Log("You defeated the Boss! Victory!");
+            if (currentWaveText != null)
+                currentWaveText.text = "Victory!";
         }
+    }
+
+    private void UpdateCurrentWaveText()
+    {
+        if (currentWaveText != null)
+            currentWaveText.text = $"Wave: {currentWaveIndex + 1}";
     }
 
     IEnumerator SpawnWave(Wave wave)

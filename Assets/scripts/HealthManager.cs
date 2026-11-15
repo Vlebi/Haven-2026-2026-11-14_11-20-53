@@ -7,9 +7,9 @@ public class HealthManager : MonoBehaviour
     [Header("Health Settings")]
     public float maxHealth = 100;
     public float currentHealth;
-    public Movement movement;
+    [SerializeField] private Movement movement;
     public float shieldHealth;
-    public float regenSpeed = 2f;
+    public float regenSpeed = 4f;
     public float regenMult = 1;
     [SerializeField]
     Canvas canvas;
@@ -23,7 +23,7 @@ public class HealthManager : MonoBehaviour
     {
         StartCoroutine(Regen());
         currentHealth = maxHealth;
-        movement = FindFirstObjectByType<Movement>();
+        
         foreach (Canvas foundCanvas in FindObjectsByType<Canvas>(FindObjectsInactive.Include, FindObjectsSortMode.None))
         {
             if (foundCanvas.CompareTag("Canvas"))
@@ -135,8 +135,10 @@ public class HealthManager : MonoBehaviour
         {
             if (!isDead && currentHealth < maxHealth)
             {
-                currentHealth += regenSpeed * regenMult;
+                currentHealth = Mathf.Min(maxHealth, currentHealth + regenSpeed * regenMult);
             }
+
+            yield return new WaitForSecondsRealtime(1f);
         }
     }
 }

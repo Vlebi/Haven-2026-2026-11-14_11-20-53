@@ -1,4 +1,5 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 
 public class score : MonoBehaviour
@@ -9,6 +10,13 @@ public class score : MonoBehaviour
     public float currentMult = 1;
     public float getScore = 100;
     public float scoreStreak = 1;
+    private TMP_Text scoreText;
+
+    private void Start()
+    {
+        scoreText = RuntimeHudText.GetOrCreate("ScoreText", "Score: 0", new Vector2(20f, -20f));
+        UpdateScoreText();
+    }
 
     void Update()
     {
@@ -17,6 +25,13 @@ public class score : MonoBehaviour
             scoreStreak = 4;
         }
         timePassedBetweenDash += Time.deltaTime;
+        UpdateScoreText();
+    }
+
+    private void UpdateScoreText()
+    {
+        if (scoreText != null)
+            scoreText.text = $"Score: {currentscore:F0}";
     }
     public void scoreStreakSystem()
     {
