@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class HealthManager : MonoBehaviour
 {
@@ -10,12 +11,17 @@ public class HealthManager : MonoBehaviour
     public float shieldHealth;
     public float regenSpeed = 0.5f;
     public float regenMult = 1;
-
+    [SerializeField]
+    Canvas canvas;
+    [SerializeField]
+    Canvas deathCanvas;
     void Start()
     {
         
         currentHealth = maxHealth;
         movement = FindFirstObjectByType<Movement>();
+        canvas = FindGameObjectWithTag("Canvas").GetComponent<Canvas>();
+        deathCanvas = FindGameObjectWithTag("DeathCanvas").GetComponent<Canvas>();
     }
 
     
@@ -38,19 +44,26 @@ public class HealthManager : MonoBehaviour
         if (currentHealth <= 0)
         {
             Die();
+
         }
     }
 
     private void Die()
     {
         Debug.Log($"{gameObject.name} died!");
-
+        canvas.enabled = false;
+        deathCanvas.enabled = true;
         // Törli magát az objektumot a pályáról
         Destroy(gameObject);
+        Invoke("LoadMainMenu", 16f);
     }
-   // public IEnumerator Regen()
+    void LoadMainMenu()
+    {
+        SceneManager.LoadScene(MainMenu);
+    }
+    // public IEnumerator Regen()
     //{
-      //  currentHealth += regenSpeed * regenMult;
-       // yield return new WaitForSecondsRealtime(1);
+    //  currentHealth += regenSpeed * regenMult;
+    // yield return new WaitForSecondsRealtime(1);
     //}
 }
