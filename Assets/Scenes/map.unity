@@ -56475,10 +56475,10 @@ MonoBehaviour:
     enemyCount: 1
     spawnDelay: 0
     targetSceneName: map
-  timeBetweenWaves: 10
+  timeBetweenWaves: 0
   spawnBuffer: 3
   enemyTag: Enemy
-  currentWaveIndex: -1
+  currentWaveIndex: 8
 --- !u!4 &1679646990
 Transform:
   m_ObjectHideFlags: 0
