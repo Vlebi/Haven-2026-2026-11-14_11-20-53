@@ -5,14 +5,15 @@ using UnityEngine;
 public class Movement : MonoBehaviour
 {
     public score score;
+    public EnemyHealthManager EHM;
     [Header("Movement & Combat")]
     public float speed = 5f;
     public float baseDamage = 10f;
 
     [Header("Dash Settings")]
-    [SerializeField] private float dashSpeed = 10f;
+    [SerializeField] private float dashSpeed = 5f;
     [SerializeField] private float dashDuration = 0.2f;
-    [SerializeField] private float bounceForce = 12f;
+    [SerializeField] private float bounceForce = 10f;
     [SerializeField] private float bounceDuration = 0.15f;
     [SerializeField] private float stunDuration = 3f;
     public bool isInvincible = false;
@@ -26,6 +27,7 @@ public class Movement : MonoBehaviour
     private Vector2 movement;
     private float horizontal;
     private float vertical;
+    float time;
 
     private bool canDash = true;
     private bool isDashing;
@@ -61,7 +63,6 @@ public class Movement : MonoBehaviour
             dashSpeed = 10;
         }
     }
-    
 
     void FixedUpdate()
     {
@@ -123,6 +124,10 @@ public class Movement : MonoBehaviour
         isDashing = false;
         canDash = true;
         isInvincible = false;
+    }
+    private void BounceRedirection()
+    {
+
     }
 
     private IEnumerator StunPlayer()
