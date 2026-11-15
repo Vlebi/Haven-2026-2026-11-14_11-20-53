@@ -28,6 +28,10 @@ public class EnemyHealthManager : MonoBehaviour
         hitsRemaining -= Mathf.Max(1, hitDamage);
         if (hitsRemaining <= 0)
         {
+            foreach (Collider2D playerCollider in GetComponentsInChildren<Collider2D>())
+                playerCollider.enabled = false;
+            foreach (SpriteRenderer playerRenderer in GetComponentsInChildren<SpriteRenderer>())
+                playerRenderer.enabled = false;
             TryDropWeapon();
 
             score = FindFirstObjectByType<score>();
