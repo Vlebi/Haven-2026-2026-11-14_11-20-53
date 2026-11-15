@@ -54,7 +54,7 @@ public class HealthManager : MonoBehaviour
         canvas.enabled = false;
         deathCanvas.enabled = true;
         // Törli magát az objektumot a pályáról
-        Destroy(gameObject);
+        SpriteRenderer.Destroy(gameObject.GetComponent<SpriteRenderer>());
         Invoke("LoadMainMenu", 16f);
     }
     void LoadMainMenu()
