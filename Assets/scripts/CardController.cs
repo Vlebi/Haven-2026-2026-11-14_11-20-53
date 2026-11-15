@@ -1,16 +1,11 @@
 using UnityEngine;
+using UnityEngine.Events;
 
-public class CardController : MonoBehaviour
+[System.Serializable]
+public class CardOption
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public string cardName;
+    [TextArea] public string description;
+    public Sprite icon;
+    public UnityEvent onCardChosen; // Drag your CardsScript methods here in the Inspector!
 }
