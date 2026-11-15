@@ -241,7 +241,7 @@ public class Attack : MonoBehaviour
         characterVisual.transform.SetParent(aimPivot, false);
         SpriteRenderer characterRenderer = characterVisual.AddComponent<SpriteRenderer>();
         characterRenderer.sprite = originalRenderer.sprite;
-        characterRenderer.color = originalRenderer.color;
+        characterRenderer.color = GameSettings.PlayerColor;
         characterRenderer.sharedMaterial = originalRenderer.sharedMaterial;
         characterRenderer.sortingLayerID = originalRenderer.sortingLayerID;
         characterRenderer.sortingOrder = originalRenderer.sortingOrder;
