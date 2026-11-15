@@ -9,17 +9,19 @@ public class HealthManager : MonoBehaviour
     public float currentHealth;
     public Movement movement;
     public float shieldHealth;
-    public float regenSpeed = 2f;
+    public float regenSpeed = 0.5f;
     public float regenMult = 1;
     [SerializeField]
     Canvas canvas;
     [SerializeField]
     Canvas deathCanvas;
+    [SerializeField] private GameObject hitMarker;
+    [SerializeField, Min(0f)] private float hitMarkerDuration = 0.2f;
     private bool isDead;
-    private WaitForSeconds _regenDelay = new WaitForSeconds(1f);
+    private Coroutine hitMarkerCoroutine;
     void Start()
     {
-
+        
         currentHealth = maxHealth;
         movement = FindFirstObjectByType<Movement>();
         foreach (Canvas foundCanvas in FindObjectsByType<Canvas>(FindObjectsInactive.Include, FindObjectsSortMode.None))
@@ -36,8 +38,9 @@ public class HealthManager : MonoBehaviour
 
         if (canvas != null) canvas.gameObject.SetActive(true);
         if (deathCanvas != null) deathCanvas.gameObject.SetActive(false);
-        StartCoroutine(Regen());
+        if (hitMarker != null) hitMarker.SetActive(false);
     }
+
     private void LateUpdate()
     {
         if (!isDead)
@@ -51,16 +54,17 @@ public class HealthManager : MonoBehaviour
         }
     }
 
-
+    
     public void TakeDamage(float damageAmount)
     {
         if (isDead) return;
         if (movement.isInvincible == true) return;
-        if (shieldHealth > 0)
+        ShowHitMarker();
+        if(shieldHealth > 0)
         {
             shieldHealth -= damageAmount;
         }
-        else if (shieldHealth > 0 && shieldHealth < damageAmount)
+        else if(shieldHealth > 0 && shieldHealth < damageAmount)
         {
             damageAmount -= shieldHealth;
             currentHealth -= shieldHealth;
@@ -76,13 +80,32 @@ public class HealthManager : MonoBehaviour
         }
     }
 
+    private void ShowHitMarker()
+    {
+        if (hitMarker == null)
+            return;
+
+        hitMarker.SetActive(true);
+        if (hitMarkerCoroutine != null)
+            StopCoroutine(hitMarkerCoroutine);
+        hitMarkerCoroutine = StartCoroutine(HideHitMarkerAfterDelay());
+    }
+
+    private IEnumerator HideHitMarkerAfterDelay()
+    {
+        yield return new WaitForSeconds(hitMarkerDuration);
+        if (hitMarker != null)
+            hitMarker.SetActive(false);
+        hitMarkerCoroutine = null;
+    }
+
     private void Die()
     {
         if (isDead) return;
-
+        
         isDead = true;
         funfacter funfacter;
-
+       
         funfacter = gameObject.GetComponent<funfacter>();
         funfacter.updateFunFact();
         Debug.Log($"{gameObject.name} died!");
@@ -106,15 +129,9 @@ public class HealthManager : MonoBehaviour
     {
         SceneManager.LoadScene("MainMenu");
     }
-    public IEnumerator Regen()
-    {
-        while (true)
-        {
-            if (!isDead && currentHealth < maxHealth)
-            {
-                currentHealth = Mathf.Min(currentHealth + (regenSpeed * regenMult), maxHealth);
-            }
-            yield return _regenDelay;
-        }
-    }
+     public IEnumerator Regen()
+     {
+      currentHealth += regenSpeed * regenMult;
+     yield return new WaitForSecondsRealtime(1);
+     }
 }

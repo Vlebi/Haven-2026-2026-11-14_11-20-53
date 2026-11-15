@@ -20,6 +20,7 @@ public class Movement : MonoBehaviour
     [SerializeField] private float bounceDuration = 0.3f;
     [SerializeField] private float stunDuration = 1.5f;
     [SerializeField] private float dashBufferTime = 0.15f;
+    [SerializeField] private GameObject stunMarker;
     public bool isInvincible = false;
 
     [Header("Combo")]
@@ -57,6 +58,9 @@ public class Movement : MonoBehaviour
         {
             score = FindFirstObjectByType<score>();
         }
+
+        if (stunMarker != null)
+            stunMarker.SetActive(false);
     }
 
     void Update()
@@ -197,6 +201,8 @@ public class Movement : MonoBehaviour
     {
         comboStacks = 0;
         isStunned = true;
+        if (stunMarker != null)
+            stunMarker.SetActive(true);
 
         // Slide to a stop briefly rather than hitting an invisible brick wall
         while (rb.linearVelocity.magnitude > 0.1f)
@@ -208,6 +214,8 @@ public class Movement : MonoBehaviour
 
         yield return new WaitForSeconds(stunDuration);
         isStunned = false;
+        if (stunMarker != null)
+            stunMarker.SetActive(false);
         canDash = true;
         isInvincible = false;
     }
