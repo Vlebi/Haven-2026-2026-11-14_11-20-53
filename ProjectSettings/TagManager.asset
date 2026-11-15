@@ -8,6 +8,7 @@ TagManager:
   - spikes
   - DeathCanvas
   - Canvas
+  - funfacter
   layers:
   - Default
   - TransparentFX

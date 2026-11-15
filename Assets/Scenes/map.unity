@@ -46941,7 +46941,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &439419195
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -47696,7 +47696,7 @@ GameObject:
   - component: {fileID: 651417886}
   m_Layer: 5
   m_Name: funfact
-  m_TagString: Untagged
+  m_TagString: funfacter
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -47727,11 +47727,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 651417884}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b50121a1a8b39fe428ca7b5b8a8a5598, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  funfact: {fileID: 0}
   typingSpeed: 0.03
   mainMenuSceneName: Main Menu
 --- !u!114 &651417887
@@ -55790,6 +55791,7 @@ GameObject:
   - component: {fileID: 1536065566}
   - component: {fileID: 1536065565}
   - component: {fileID: 1536065564}
+  - component: {fileID: 1536065571}
   m_Layer: 0
   m_Name: char1
   m_TagString: Untagged
@@ -55872,12 +55874,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HealthManager
   maxHealth: 100
   currentHealth: 0
-  movement: {fileID: 0}
+  movement: {fileID: 1536065569}
   shieldHealth: 0
   regenSpeed: 0.5
   regenMult: 0
-  canvas: {fileID: 0}
-  deathCanvas: {fileID: 0}
+  canvas: {fileID: 80350721}
+  deathCanvas: {fileID: 439419197}
 --- !u!58 &1536065566
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -56082,6 +56084,21 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &1536065571
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1536065562}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b50121a1a8b39fe428ca7b5b8a8a5598, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::funfacter
+  funfact: {fileID: 651417887}
+  typingSpeed: 0.2
+  mainMenuSceneName: Main Menu
 --- !u!1 &1575850184
 GameObject:
   m_ObjectHideFlags: 0

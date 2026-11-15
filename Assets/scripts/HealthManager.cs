@@ -80,7 +80,9 @@ public class HealthManager : MonoBehaviour
         if (isDead) return;
         
         isDead = true;
-        funfacter funfacter = FindFirstObjectByType<funfacter>();
+        funfacter funfacter;
+       
+        funfacter = gameObject.GetComponent<funfacter>();
         funfacter.updateFunFact();
         Debug.Log($"{gameObject.name} died!");
         if (canvas != null) canvas.gameObject.SetActive(false);
