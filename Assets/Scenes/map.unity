@@ -51183,7 +51183,6 @@ GameObject:
   - component: {fileID: 1205856459}
   - component: {fileID: 1205856458}
   - component: {fileID: 1205856457}
-  - component: {fileID: 1205856456}
   m_Layer: 0
   m_Name: spikes (1)
   m_TagString: spikes
@@ -51206,19 +51205,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 492817720}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1205856456
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1205856454}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: afeb1cfa8ed96c345b97855617d53a2a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
-  damageAmount: 10
 --- !u!19719996 &1205856457
 TilemapCollider2D:
   m_ObjectHideFlags: 0
@@ -54739,7 +54725,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 11
+  orthographic size: 1.40625
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -55391,7 +55377,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HealthManager
   maxHealth: 100
   currentHealth: 0
-  movementcs: {fileID: 1536065569}
+  movement: {fileID: 0}
   shieldHealth: 0
   regenSpeed: 0.5
   regenMult: 0
@@ -55514,7 +55500,7 @@ MonoBehaviour:
   wallCollisionMask:
     serializedVersion: 2
     m_Bits: 8
-  wallClearance: 0.01
+  wallClearance: 0.04
   equippedWeaponIndex: -1
 --- !u!114 &1536065569
 MonoBehaviour:
@@ -55528,10 +55514,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8ed1de288ea85c4cbe8a0bf5fa671fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Movement
-  score: {fileID: 0}
+  score: {fileID: 1038862628}
   speed: 3
   baseDamage: 10
-  dashSpeed: 20
+  dashSpeed: 10
   dashDuration: 0.2
   bounceForce: 12
   bounceDuration: 0.15
