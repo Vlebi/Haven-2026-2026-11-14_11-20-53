@@ -20,7 +20,7 @@ public class score : MonoBehaviour
     }
     public void scoreStreakSystem()
     {
-        if (EHM.hitsRemaining <= 0 && timePassedBetweenDash >= 1.5f)
+        if (EHM.hitsRemaining <= 0 && timePassedBetweenDash <= 1.5f)
         {
             
             scoreStreak++;

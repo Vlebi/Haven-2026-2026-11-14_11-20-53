@@ -5,6 +5,7 @@ using UnityEngine;
 public class Movement : MonoBehaviour
 {
     public score score;
+    public EnemyHealthManager EHM;
     [Header("Movement & Combat")]
     public float speed = 5f;
     public float baseDamage = 10f;
@@ -26,6 +27,7 @@ public class Movement : MonoBehaviour
     private Vector2 movement;
     private float horizontal;
     private float vertical;
+    float time;
 
     private bool canDash = true;
     private bool isDashing;
@@ -60,12 +62,7 @@ public class Movement : MonoBehaviour
         {
             dashSpeed = 10;
         }
-        if(hitEnemyThisDash == true)
-        {
-            isStunned = false;
-        }
     }
-    
 
     void FixedUpdate()
     {
