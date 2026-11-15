@@ -105,9 +105,9 @@ public class HealthManager : MonoBehaviour
     {
         SceneManager.LoadScene("MainMenu");
     }
-    // public IEnumerator Regen()
-    //{
-    //  currentHealth += regenSpeed * regenMult;
-    // yield return new WaitForSecondsRealtime(1);
-    //}
+     public IEnumerator Regen()
+     {
+      currentHealth += regenSpeed * regenMult;
+     yield return new WaitForSecondsRealtime(1);
+     }
 }

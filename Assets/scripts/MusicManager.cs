@@ -49,6 +49,17 @@ public class MusicManager : MonoBehaviour
         PlayNextTrack();
     }
 
+    private void OnEnable()
+    {
+        ApplyMusicVolume();
+    }
+
+    public void ApplyMusicVolume()
+    {
+        foreach (AudioSource source in GetComponentsInChildren<AudioSource>(true))
+            source.volume = GameSettings.MusicVolume;
+    }
+
     private void Update()
     {
         if (tracks.Count > 0 && !tracks[currentTrackIndex].isPlaying)
@@ -86,6 +97,7 @@ public class MusicManager : MonoBehaviour
         }
 
         AudioSource track = tracks[currentTrackIndex];
+        track.volume = GameSettings.MusicVolume;
         track.Play();
         playCounts[currentTrackIndex]++;
         SetCurrentlyPlaying(track.clip.name);
