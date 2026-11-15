@@ -65,6 +65,8 @@ public class Movement : MonoBehaviour
 
     void Update()
     {
+        if (PauseManager.isPaused) return;
+
         // Always capture movement input so there's no dead frame after a dash/stun
         moveInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized;
 
