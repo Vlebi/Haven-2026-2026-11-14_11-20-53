@@ -22,11 +22,13 @@ public class WaveSystemManager : MonoBehaviour
     public float spawnBuffer = 1f;
     public string enemyTag = "Enemy";
 
-    private int currentWaveIndex = 0;
+    public int currentWaveIndex = 0;
     private bool isWaveActive = false;
 
     void Start()
     {
+        currentWaveIndex = BedScript.LoadSavedWave();
+           
         StartCoroutine(StartNextWave());
     }
 
