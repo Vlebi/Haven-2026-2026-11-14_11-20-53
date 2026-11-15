@@ -20,8 +20,8 @@ public class HealthManager : MonoBehaviour
         
         currentHealth = maxHealth;
         movement = FindFirstObjectByType<Movement>();
-        canvas = FindGameObjectWithTag("Canvas").GetComponent<Canvas>();
-        deathCanvas = FindGameObjectWithTag("DeathCanvas").GetComponent<Canvas>();
+        canvas = GameObject.FindGameObjectWithTag("Canvas").GetComponent<Canvas>();
+        deathCanvas = GameObject.FindGameObjectWithTag("DeathCanvas").GetComponent<Canvas>();
     }
 
     
@@ -59,7 +59,7 @@ public class HealthManager : MonoBehaviour
     }
     void LoadMainMenu()
     {
-        SceneManager.LoadScene(MainMenu);
+        SceneManager.LoadScene("Main Menu");
     }
     // public IEnumerator Regen()
     //{
