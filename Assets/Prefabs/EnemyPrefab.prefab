@@ -219,8 +219,8 @@ MonoBehaviour:
   currentHealth: 0
   movement: {fileID: 0}
   shieldHealth: 0
-  regenSpeed: 0.5
-  regenMult: 1
+  regenSpeed: 4
+  regenMult: 2
   canvas: {fileID: 0}
   deathCanvas: {fileID: 0}
   hitMarker: {fileID: 0}
