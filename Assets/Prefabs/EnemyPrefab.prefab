@@ -16,6 +16,8 @@ GameObject:
   - component: {fileID: 981739023666642576}
   - component: {fileID: 587424249182898632}
   - component: {fileID: 1841973676742272537}
+  - component: {fileID: -3396438355927057816}
+  - component: {fileID: -4950859376675264062}
   m_Layer: 0
   m_Name: EnemyPrefab
   m_TagString: Enemy
@@ -219,6 +221,8 @@ MonoBehaviour:
   shieldHealth: 0
   regenSpeed: 0.5
   regenMult: 1
+  canvas: {fileID: 0}
+  deathCanvas: {fileID: 0}
 --- !u!114 &1841973676742272537
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -237,3 +241,41 @@ MonoBehaviour:
   weaponDropChance: 0.05
   hitsRemaining: 0
   enemySpawn: {fileID: 0}
+--- !u!195 &-3396438355927057816
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 23838016047320616}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.6399999
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 1.2799999
+  m_BaseOffset: 0.6399999
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
+--- !u!114 &-4950859376675264062
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 23838016047320616}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71a096a461b1d0748a172f61a38034e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyFollow
+  playerTag: Player
+  stoppingDistance: 1
+  moveSpeed: 1.7
+  flipSprite: 1

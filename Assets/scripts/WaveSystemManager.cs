@@ -29,7 +29,7 @@ public class WaveSystemManager : MonoBehaviour
 
     void Start()
     {
-        currentWaveIndex = 8;
+        currentWaveIndex = BedScript.LoadSavedWave();
         StartCoroutine(StartNextWave());
     }
 
