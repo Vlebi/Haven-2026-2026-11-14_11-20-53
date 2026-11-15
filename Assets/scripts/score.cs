@@ -16,10 +16,10 @@ public class score : MonoBehaviour
         {
             scoreStreak = 4;
         }
+        timePassedBetweenDash += Time.deltaTime;
     }
     public void scoreStreakSystem()
     {
-        timePassedBetweenDash = Time.time;
         if (EHM.hitsRemaining <= 0 && timePassedBetweenDash >= 1.5f)
         {
             
