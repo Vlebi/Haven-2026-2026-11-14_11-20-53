@@ -1,6 +1,7 @@
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Assemblies;
 //balls, greasy ones in fact
 public class Movement : MonoBehaviour
 {
@@ -38,7 +39,11 @@ public class Movement : MonoBehaviour
     private Vector2 lastDashDirection;
     private Coroutine activeDashCoroutine;
 
-    public float CurrentDSpeed => dashSpeed + (comboStacks * speedBonusPerHit);
+    public float CurrentDSpeed
+    {
+        get => dashSpeed + (comboStacks * speedBonusPerHit);
+        set => dashSpeed = value - (comboStacks * speedBonusPerHit);
+    } 
     public float CurrentDamage => baseDamage + (comboStacks * damageBonusPerHit);
 
     void Start()
@@ -62,9 +67,9 @@ public class Movement : MonoBehaviour
 
         horizontal = Input.GetAxisRaw("Horizontal");
         vertical = Input.GetAxisRaw("Vertical");
-        if (score != null && score.timePassedBetweenDash >= 1.5f)
+        if (score.timePassedBetweenDash >= 1.5f)
         {
-            dashSpeed = 10;
+            CurrentDSpeed = dashSpeed;
         }
     }
 
