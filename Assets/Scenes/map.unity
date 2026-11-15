@@ -51235,7 +51235,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1038862625}
   - component: {fileID: 1038862624}
-  - component: {fileID: 1038862626}
   - component: {fileID: 1038862627}
   - component: {fileID: 1038862628}
   m_Layer: 0
@@ -51282,23 +51281,6 @@ Transform:
   - {fileID: 1069268105}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1038862626
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1038862623}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a01927fcd370c06469ce257690250256, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TopDownSpawner
-  enemyPrefab: {fileID: 23838016047320616, guid: 3b96209376724514b9cb73ca63a72574, type: 3}
-  enemySceneName: map
-  spawnInterval: 1.2
-  spawnBuffer: 1
-  maxEnemies: 30
 --- !u!114 &1038862627
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -56413,6 +56395,105 @@ RectTransform:
   m_AnchoredPosition: {x: -5, y: 0}
   m_SizeDelta: {x: -20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1679646988
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1679646990}
+  - component: {fileID: 1679646989}
+  m_Layer: 0
+  m_Name: WaveManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1679646989
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1679646988}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 262d3290c04299849b7133100df9ce3a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NewMonoBehaviourScript
+  waves:
+  - waveName: Wave 1
+    enemyPrefab: {fileID: 23838016047320616, guid: 3b96209376724514b9cb73ca63a72574, type: 3}
+    enemyCount: 5
+    spawnDelay: 0
+    targetSceneName: map
+  - waveName: Wave 2
+    enemyPrefab: {fileID: 23838016047320616, guid: 3b96209376724514b9cb73ca63a72574, type: 3}
+    enemyCount: 9
+    spawnDelay: 0
+    targetSceneName: map
+  - waveName: 'Wave 3 '
+    enemyPrefab: {fileID: 23838016047320616, guid: 3b96209376724514b9cb73ca63a72574, type: 3}
+    enemyCount: 19
+    spawnDelay: 0
+    targetSceneName: map
+  - waveName: Wave 4
+    enemyPrefab: {fileID: 23838016047320616, guid: 3b96209376724514b9cb73ca63a72574, type: 3}
+    enemyCount: 29
+    spawnDelay: 0
+    targetSceneName: map
+  - waveName: Wave 5
+    enemyPrefab: {fileID: 23838016047320616, guid: 3b96209376724514b9cb73ca63a72574, type: 3}
+    enemyCount: 35
+    spawnDelay: 0
+    targetSceneName: map
+  - waveName: Wave 6
+    enemyPrefab: {fileID: 23838016047320616, guid: 3b96209376724514b9cb73ca63a72574, type: 3}
+    enemyCount: 40
+    spawnDelay: 0
+    targetSceneName: map
+  - waveName: Wave 7
+    enemyPrefab: {fileID: 23838016047320616, guid: 3b96209376724514b9cb73ca63a72574, type: 3}
+    enemyCount: 45
+    spawnDelay: 0
+    targetSceneName: map
+  - waveName: Wave 8
+    enemyPrefab: {fileID: 23838016047320616, guid: 3b96209376724514b9cb73ca63a72574, type: 3}
+    enemyCount: 50
+    spawnDelay: 0
+    targetSceneName: map
+  - waveName: Wave 9
+    enemyPrefab: {fileID: 23838016047320616, guid: 3b96209376724514b9cb73ca63a72574, type: 3}
+    enemyCount: 55
+    spawnDelay: 0
+    targetSceneName: map
+  - waveName: Boss fight
+    enemyPrefab: {fileID: 5404754231608079631, guid: f343a1d8f4e59f34d88a8bd4799b9661, type: 3}
+    enemyCount: 1
+    spawnDelay: 0
+    targetSceneName: map
+  timeBetweenWaves: 0
+  spawnBuffer: 3
+  enemyTag: Enemy
+  currentWaveIndex: 8
+--- !u!4 &1679646990
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1679646988}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.37, y: -0.02, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1918318501
 GameObject:
   m_ObjectHideFlags: 0
@@ -56661,3 +56742,4 @@ SceneRoots:
   - {fileID: 492817720}
   - {fileID: 1038862625}
   - {fileID: 475658585}
+  - {fileID: 1679646990}
