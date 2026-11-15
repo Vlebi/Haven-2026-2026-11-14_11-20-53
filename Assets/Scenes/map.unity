@@ -46941,7 +46941,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &439419195
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -56016,12 +56016,16 @@ MonoBehaviour:
   score: {fileID: 1038862628}
   EHM: {fileID: 0}
   speed: 3
+  acceleration: 60
+  deceleration: 70
   baseDamage: 10
-  dashSpeed: 10
+  dashSpeed: 5
+  maxDashSpeed: 30
   dashDuration: 0.2
-  bounceForce: 12
+  bounceForce: 10
   bounceDuration: 0.15
   stunDuration: 1.5
+  dashBufferTime: 0.15
   isInvincible: 0
   speedBonusPerHit: 2
   damageBonusPerHit: 5
@@ -56097,7 +56101,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::funfacter
   funfact: {fileID: 651417887}
-  typingSpeed: 0.2
+  typingSpeed: 0.08
   mainMenuSceneName: Main Menu
 --- !u!1 &1575850184
 GameObject:
