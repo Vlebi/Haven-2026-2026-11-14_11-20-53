@@ -52,6 +52,7 @@ public class HealthManager : MonoBehaviour
             deathCanvas.transform.localScale = Vector3.one;
             deathCanvas.gameObject.SetActive(true);
         }
+
     }
 
 

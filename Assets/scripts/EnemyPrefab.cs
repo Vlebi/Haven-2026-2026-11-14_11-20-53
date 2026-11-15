@@ -9,7 +9,7 @@ public class EnemyMovement : MonoBehaviour
     public string targetName = "char1";
 
     [Header("Forgás Beállítások")]
-    public float rotationOffset = -90f;
+    public float rotationOffset = 90f;
 
     private Transform playerTransform;
     private Rigidbody2D rb;
@@ -39,7 +39,7 @@ public class EnemyMovement : MonoBehaviour
             // Kard hegyének forgatása a játékos felé
             Vector2 direction = playerTransform.position - transform.position;
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            rb.MoveRotation(angle + rotationOffset);
+
         }
     }
 }

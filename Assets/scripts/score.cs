@@ -30,8 +30,7 @@ public class score : MonoBehaviour
 
     private void UpdateScoreText()
     {
-        if (scoreText != null)
-            scoreText.text = 
+        
     }
     public void scoreStreakSystem()
     {
