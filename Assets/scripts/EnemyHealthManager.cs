@@ -33,7 +33,7 @@ public class EnemyHealthManager : MonoBehaviour
             score = FindFirstObjectByType<score>();
             if (score != null)
                 score.currentscore += score.getScore * score.currentMult * score.scoreStreak;
-sasd            if (enemySpawn == null)
+           if (enemySpawn == null)
                 enemySpawn = FindFirstObjectByType<EnemySpawn>();
 
             if (enemySpawn != null)

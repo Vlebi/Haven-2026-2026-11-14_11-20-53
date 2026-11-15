@@ -265,29 +265,4 @@ public class Attack : MonoBehaviour
         weaponHitbox.size = tile.sprite.bounds.size;
         return true;
     }
-
-    public bool TryGetRandomWeaponDrop(out int weaponIndex)
-    {
-        weaponIndex = -1;
-        WeaponDefinition equippedWeapon = EquippedWeapon;
-        if (equippedWeapon == null)
-            return false;
-
-        List<int> eligibleWeapons = new List<int>();
-        for (int i = 0; i < weapons.Count; i++)
-        {
-            WeaponDefinition candidate = weapons[i];
-            if (candidate == null || candidate.tile == null ||
-                Mathf.Abs(candidate.tier - equippedWeapon.tier) > 1)
-                continue;
-
-            eligibleWeapons.Add(i);
-        }
-
-        if (eligibleWeapons.Count == 0)
-            return false;
-
-        weaponIndex = eligibleWeapons[Random.Range(0, eligibleWeapons.Count)];
-        return true;
-    }
 }
