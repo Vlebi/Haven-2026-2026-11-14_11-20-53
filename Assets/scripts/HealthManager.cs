@@ -15,7 +15,10 @@ public class HealthManager : MonoBehaviour
     Canvas canvas;
     [SerializeField]
     Canvas deathCanvas;
+    [SerializeField] private GameObject hitMarker;
+    [SerializeField, Min(0f)] private float hitMarkerDuration = 0.2f;
     private bool isDead;
+    private Coroutine hitMarkerCoroutine;
     void Start()
     {
         
@@ -35,6 +38,7 @@ public class HealthManager : MonoBehaviour
 
         if (canvas != null) canvas.gameObject.SetActive(true);
         if (deathCanvas != null) deathCanvas.gameObject.SetActive(false);
+        if (hitMarker != null) hitMarker.SetActive(false);
     }
 
     private void LateUpdate()
@@ -55,6 +59,7 @@ public class HealthManager : MonoBehaviour
     {
         if (isDead) return;
         if (movement.isInvincible == true) return;
+        ShowHitMarker();
         if(shieldHealth > 0)
         {
             shieldHealth -= damageAmount;
@@ -73,6 +78,25 @@ public class HealthManager : MonoBehaviour
             Die();
 
         }
+    }
+
+    private void ShowHitMarker()
+    {
+        if (hitMarker == null)
+            return;
+
+        hitMarker.SetActive(true);
+        if (hitMarkerCoroutine != null)
+            StopCoroutine(hitMarkerCoroutine);
+        hitMarkerCoroutine = StartCoroutine(HideHitMarkerAfterDelay());
+    }
+
+    private IEnumerator HideHitMarkerAfterDelay()
+    {
+        yield return new WaitForSeconds(hitMarkerDuration);
+        if (hitMarker != null)
+            hitMarker.SetActive(false);
+        hitMarkerCoroutine = null;
     }
 
     private void Die()
