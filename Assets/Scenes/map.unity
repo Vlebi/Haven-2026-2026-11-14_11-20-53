@@ -46941,7 +46941,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &439419195
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -47696,7 +47696,7 @@ GameObject:
   - component: {fileID: 651417886}
   m_Layer: 5
   m_Name: funfact
-  m_TagString: Untagged
+  m_TagString: funfacter
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -47717,8 +47717,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.00048828, y: -121}
-  m_SizeDelta: {x: 800, y: 208}
+  m_AnchoredPosition: {x: 0.9265, y: -125}
+  m_SizeDelta: {x: 605.3449, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &651417886
 MonoBehaviour:
@@ -47727,11 +47727,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 651417884}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b50121a1a8b39fe428ca7b5b8a8a5598, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  funfact: {fileID: 0}
+  typingSpeed: 0.03
+  mainMenuSceneName: Main Menu
 --- !u!114 &651417887
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -55788,6 +55791,7 @@ GameObject:
   - component: {fileID: 1536065566}
   - component: {fileID: 1536065565}
   - component: {fileID: 1536065564}
+  - component: {fileID: 1536065571}
   m_Layer: 0
   m_Name: char1
   m_TagString: Untagged
@@ -55870,10 +55874,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HealthManager
   maxHealth: 100
   currentHealth: 0
-  movement: {fileID: 0}
+  movement: {fileID: 1536065569}
   shieldHealth: 0
   regenSpeed: 0.5
   regenMult: 0
+  canvas: {fileID: 80350721}
+  deathCanvas: {fileID: 439419197}
 --- !u!58 &1536065566
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -55986,14 +55992,14 @@ MonoBehaviour:
     offset: {x: 0.7, y: 0}
     scale: {x: 3.2, y: 3.2, z: 1}
     spriteAngleOffset: -90
-  startingWeaponIndex: 4
+  startingWeaponIndex: 0
   behindEnemySearchDistance: 1.25
   behindEnemySideTolerance: 0.4
-  hammerSplashRadius: 0.75
+  hammerSplashRadius: 0.29
   wallCollisionMask:
     serializedVersion: 2
     m_Bits: 8
-  wallClearance: 0.04
+  wallClearance: 0.19
   equippedWeaponIndex: -1
 --- !u!114 &1536065569
 MonoBehaviour:
@@ -56008,6 +56014,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Movement
   score: {fileID: 1038862628}
+  EHM: {fileID: 0}
   speed: 3
   baseDamage: 10
   dashSpeed: 10
@@ -56077,6 +56084,21 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &1536065571
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1536065562}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b50121a1a8b39fe428ca7b5b8a8a5598, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::funfacter
+  funfact: {fileID: 651417887}
+  typingSpeed: 0.2
+  mainMenuSceneName: Main Menu
 --- !u!1 &1575850184
 GameObject:
   m_ObjectHideFlags: 0
@@ -56498,7 +56520,7 @@ RectTransform:
   m_GameObject: {fileID: 1958286178}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 131623532}

@@ -15,18 +15,45 @@ public class HealthManager : MonoBehaviour
     Canvas canvas;
     [SerializeField]
     Canvas deathCanvas;
+    private bool isDead;
     void Start()
     {
         
         currentHealth = maxHealth;
         movement = FindFirstObjectByType<Movement>();
-        canvas = GameObject.FindGameObjectWithTag("Canvas").GetComponent<Canvas>();
-        deathCanvas = GameObject.FindGameObjectWithTag("DeathCanvas").GetComponent<Canvas>();
+        foreach (Canvas foundCanvas in FindObjectsByType<Canvas>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+        {
+            if (foundCanvas.CompareTag("Canvas"))
+            {
+                canvas = foundCanvas;
+            }
+            else if (foundCanvas.CompareTag("DeathCanvas"))
+            {
+                deathCanvas = foundCanvas;
+            }
+        }
+
+        if (canvas != null) canvas.gameObject.SetActive(true);
+        if (deathCanvas != null) deathCanvas.gameObject.SetActive(false);
+    }
+
+    private void LateUpdate()
+    {
+        if (!isDead)
+            return;
+
+        if (canvas != null) canvas.gameObject.SetActive(false);
+        if (deathCanvas != null)
+        {
+            deathCanvas.transform.localScale = Vector3.one;
+            deathCanvas.gameObject.SetActive(true);
+        }
     }
 
     
     public void TakeDamage(float damageAmount)
     {
+        if (isDead) return;
         if (movement.isInvincible == true) return;
         if(shieldHealth > 0)
         {
@@ -50,16 +77,33 @@ public class HealthManager : MonoBehaviour
 
     private void Die()
     {
+        if (isDead) return;
+        
+        isDead = true;
+        funfacter funfacter;
+       
+        funfacter = gameObject.GetComponent<funfacter>();
+        funfacter.updateFunFact();
         Debug.Log($"{gameObject.name} died!");
-        canvas.enabled = false;
-        deathCanvas.enabled = true;
+        if (canvas != null) canvas.gameObject.SetActive(false);
+        if (deathCanvas != null)
+        {
+            deathCanvas.transform.localScale = Vector3.one;
+            deathCanvas.gameObject.SetActive(true);
+        }
         // Törli magát az objektumot a pályáról
-        SpriteRenderer.Destroy(gameObject.GetComponent<SpriteRenderer>());
+        if (movement != null) movement.enabled = false;
+        Attack attack = GetComponent<Attack>();
+        if (attack != null) attack.enabled = false;
+        foreach (Collider2D playerCollider in GetComponentsInChildren<Collider2D>())
+            playerCollider.enabled = false;
+        foreach (SpriteRenderer playerRenderer in GetComponentsInChildren<SpriteRenderer>())
+            playerRenderer.enabled = false;
         Invoke("LoadMainMenu", 16f);
     }
     void LoadMainMenu()
     {
-        SceneManager.LoadScene("Main Menu");
+        SceneManager.LoadScene("MainMenu");
     }
     // public IEnumerator Regen()
     //{

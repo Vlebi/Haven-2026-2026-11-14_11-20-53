@@ -1,6 +1,7 @@
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Assemblies;
 //balls, greasy ones in fact
 public class Movement : MonoBehaviour
 {
@@ -38,13 +39,21 @@ public class Movement : MonoBehaviour
     private Vector2 lastDashDirection;
     private Coroutine activeDashCoroutine;
 
-    public float CurrentDSpeed => dashSpeed + (comboStacks * speedBonusPerHit);
+    public float CurrentDSpeed
+    {
+        get => dashSpeed + (comboStacks * speedBonusPerHit);
+        set => dashSpeed = value - (comboStacks * speedBonusPerHit);
+    } 
     public float CurrentDamage => baseDamage + (comboStacks * damageBonusPerHit);
 
     void Start()
     {
         cam = Camera.main;
         rb = GetComponent<Rigidbody2D>();
+        if (score == null)
+        {
+            score = FindFirstObjectByType<score>();
+        }
     }
 
     void Update()
@@ -60,7 +69,7 @@ public class Movement : MonoBehaviour
         vertical = Input.GetAxisRaw("Vertical");
         if (score.timePassedBetweenDash >= 1.5f)
         {
-            dashSpeed = 10;
+            CurrentDSpeed = dashSpeed;
         }
     }
 
@@ -102,7 +111,10 @@ public class Movement : MonoBehaviour
         if (isDashing && !hitEnemyThisDash && collision.gameObject.CompareTag("Enemy"))
         {
             hitEnemyThisDash = true;
-            score.timePassedBetweenDash = 0;
+            if (score != null)
+            {
+                score.timePassedBetweenDash = 0;
+            }
 
             if (activeDashCoroutine != null)
             {

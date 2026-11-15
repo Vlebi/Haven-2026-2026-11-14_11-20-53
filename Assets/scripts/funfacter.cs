@@ -408,14 +408,23 @@ public class funfacter : MonoBehaviour
     "Hiccups are caused by spasms of the diaphragm.",
     "Your tongue is a muscle."
 };
-    TextMeshPro funfact;
+    [SerializeField] private TMP_Text funfact;
     public float typingSpeed = 0.03f;
     public string mainMenuSceneName = "Main Menu";
+
+    private void Awake()
+    {
+        if (funfact == null)
+            funfact = GetComponent<TMP_Text>();
+    }
+
     public void printFunFact() { 
+    if (funfact == null) return;
     funfact.text = funFacts[Random.Range(0, funFacts.Length)];
     }
     public void updateFunFact()
     {
+        if (funfact == null) return;
         StartCoroutine(TypeText(funFacts[Random.Range(0, funFacts.Length)]));
     }
 
@@ -425,6 +434,8 @@ public class funfacter : MonoBehaviour
     }
     IEnumerator TypeText(string text)
     {
+        if (funfact == null) yield break;
+
         funfact.text = "";
         foreach (char c in text.ToCharArray())
         {

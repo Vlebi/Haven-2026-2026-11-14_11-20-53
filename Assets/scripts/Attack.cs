@@ -134,7 +134,10 @@ public class Attack : MonoBehaviour
         if (target == null)
             return;
 
-        target.TakeSwordHit(weapon.damageInHits + currentDamageBuff);
+        int directDamage = weapon.weaponName == "hammer"
+            ? 1 + currentDamageBuff
+            : weapon.damageInHits + currentDamageBuff;
+        target.TakeSwordHit(directDamage);
 
         switch (weapon.weaponName)
         {
@@ -145,7 +148,7 @@ public class Attack : MonoBehaviour
                 DamageEnemyBehind(target, 3);
                 break;
             case "hammer":
-                DamageNearbyEnemies(target, 3);
+                DamageNearbyEnemies(target, 1);
                 break;
         }
     }
@@ -197,13 +200,22 @@ public class Attack : MonoBehaviour
 
     private void DamageNearbyEnemies(EnemyHealthManager target, int damageInHits)
     {
-        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(target.transform.position, hammerSplashRadius);
+        Vector2 attackDirection = (Vector2)target.transform.position - (Vector2)transform.position;
+        if (attackDirection.sqrMagnitude < 0.0001f)
+            return;
+        attackDirection.Normalize();
+
+        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(target.transform.position, hammerSplashRadius * 0.4f);
         HashSet<EnemyHealthManager> damagedEnemies = new HashSet<EnemyHealthManager>();
 
         foreach (Collider2D collider in nearbyColliders)
         {
             EnemyHealthManager candidate = GetEnemyHealth(collider);
             if (candidate == null || candidate == target || !damagedEnemies.Add(candidate))
+                continue;
+
+            Vector2 offsetFromPlayer = (Vector2)candidate.transform.position - (Vector2)transform.position;
+            if (Vector2.Dot(offsetFromPlayer, attackDirection) <= 0f)
                 continue;
 
             candidate.TakeSwordHit(damageInHits);
