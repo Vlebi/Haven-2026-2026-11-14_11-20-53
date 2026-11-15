@@ -6,21 +6,22 @@ public class HealthManager : MonoBehaviour
     [Header("Health Settings")]
     public float maxHealth = 100;
     public float currentHealth;
-    public Movement movementcs;
+    public Movement movement;
     public float shieldHealth;
     public float regenSpeed = 0.5f;
-    public float regenMult;
+    public float regenMult = 1;
 
     void Start()
     {
         
         currentHealth = maxHealth;
+        movement = FindFirstObjectByType<Movement>();
     }
 
     
     public void TakeDamage(float damageAmount)
     {
-        if (movementcs.isInvincible == true) return;
+        if (movement.isInvincible == true) return;
         if(shieldHealth > 0)
         {
             shieldHealth -= damageAmount;
@@ -47,9 +48,9 @@ public class HealthManager : MonoBehaviour
         // Törli magát az objektumot a pályáról
         Destroy(gameObject);
     }
-    public IEnumerator Regen()
-    {
-        currentHealth += regenSpeed * regenMult;
-        yield return new WaitForSecondsRealtime(1);
-    }
+   // public IEnumerator Regen()
+    //{
+      //  currentHealth += regenSpeed * regenMult;
+       // yield return new WaitForSecondsRealtime(1);
+    //}
 }

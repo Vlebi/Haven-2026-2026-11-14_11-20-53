@@ -7,7 +7,7 @@ public class EnemyHealthManager : MonoBehaviour
     [SerializeField] private float hitStunDuration = 1f;
     [SerializeField] private float knockbackForce = 3f;
 
-    public float HitsRemainging;
+    public float hitsRemaining;
     private Rigidbody2D rb;
     private EnemyMovement enemyMovement;
     private score score;
@@ -17,15 +17,15 @@ public class EnemyHealthManager : MonoBehaviour
    public EnemySpawn enemySpawn;
     private void Awake()
     {
-        HitsRemainging = Mathf.Max(1, hitsToKill);
+        hitsRemaining = Mathf.Max(1, hitsToKill);
         rb = GetComponent<Rigidbody2D>();
         enemyMovement = GetComponent<EnemyMovement>();
     }
 
     public void TakeSwordHit(int hitDamage = 1)
     {
-        HitsRemainging -= Mathf.Max(1, hitDamage);
-        if (HitsRemainging <= 0)
+        hitsRemaining -= Mathf.Max(1, hitDamage);
+        if (hitsRemaining <= 0)
         {
 
             score = FindFirstObjectByType<score>();
@@ -43,7 +43,7 @@ public class EnemyHealthManager : MonoBehaviour
         }
 
         StartHitReaction();
-        Debug.Log(HitsRemainging + " hits remaining for " + gameObject.name);
+        Debug.Log(hitsRemaining + " hits remaining for " + gameObject.name);
     }
 
     private void StartHitReaction()
