@@ -1,6 +1,6 @@
 using UnityEngine;
-using UnityEngine.AI;
 
+[RequireComponent(typeof(Rigidbody2D))]
 public class EnemyFollow : MonoBehaviour
 {
     [Header("Target Settings")]
@@ -11,48 +11,44 @@ public class EnemyFollow : MonoBehaviour
     [Header("Movement Settings")]
     public float moveSpeed = 3.5f;
     public bool flipSprite = true;
+    public bool rotateToTarget = false; // top-down only
 
-    private NavMeshAgent agent;
     private Transform playerTransform;
     private SpriteRenderer spriteRenderer;
     private Rigidbody2D rb;
 
     private void Awake()
     {
-        agent = GetComponent<NavMeshAgent>();
+        Debug.Log("EnemyFollow started", this);
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-
-        if (agent != null)
-            agent.enabled = false;
-
-        FindPlayer();
+        rb.gravityScale = 0f; // remove if you want gravity
     }
 
     private void FixedUpdate()
     {
         if (playerTransform == null && !FindPlayer())
+        {
+            Debug.LogWarning("EnemyFollow: player not found", this);
             return;
+        }
 
         Vector2 direction = (Vector2)playerTransform.position - rb.position;
+
         if (direction.magnitude > stoppingDistance)
         {
-            Vector2 nextPosition = Vector2.MoveTowards(
-                rb.position,
-                playerTransform.position,
-                moveSpeed * Time.fixedDeltaTime);
-            rb.MovePosition(nextPosition);
+            Vector2 next = Vector2.MoveTowards(
+                rb.position, playerTransform.position, moveSpeed * Time.fixedDeltaTime);
+            rb.MovePosition(next);
         }
 
         if (flipSprite && spriteRenderer != null)
         {
-            if (direction.x > 0.1f)
-                spriteRenderer.flipX = false;
-            else if (direction.x < -0.1f)
-                spriteRenderer.flipX = true;
+            if (direction.x > 0.1f) spriteRenderer.flipX = false;
+            else if (direction.x < -0.1f) spriteRenderer.flipX = true;
         }
 
-        if (rb != null && direction.sqrMagnitude > 0.0001f)
+        if (rotateToTarget && direction.sqrMagnitude > 0.0001f)
         {
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             rb.MoveRotation(angle - 90f);
@@ -62,16 +58,11 @@ public class EnemyFollow : MonoBehaviour
     private bool FindPlayer()
     {
         GameObject player = null;
+
         if (!string.IsNullOrEmpty(playerTag))
         {
-            try
-            {
-                player = GameObject.FindGameObjectWithTag(playerTag);
-            }
-            catch (UnityException)
-            {
-                Debug.LogWarning($"EnemyFollow has an undefined player tag '{playerTag}'.", this);
-            }
+            try { player = GameObject.FindGameObjectWithTag(playerTag); }
+            catch (UnityException) { Debug.LogWarning($"Tag '{playerTag}' is not defined.", this); }
         }
 
         if (player == null && !string.IsNullOrEmpty(playerObjectName))

@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 1841973676742272537}
   - component: {fileID: -3396438355927057816}
   - component: {fileID: -4950859376675264062}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: EnemyPrefab
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -87,7 +87,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 9
+  m_SortingOrder: 330
   m_MaskInteraction: 0
   m_Sprite: {fileID: 455405883375745328, guid: b53c1ab9967fa844394bc1729e0518d0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -114,7 +114,7 @@ MonoBehaviour:
   speed: 0.7
   speedMultiplayer: 1
   targetName: char1
-  rotationOffset: -90
+  rotationOffset: 0
 --- !u!61 &817730578655188342
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -195,7 +195,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 23838016047320616}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 70ac04864d07b10409dff635d1c65190, type: 3}
   m_Name: 
@@ -282,3 +282,4 @@ MonoBehaviour:
   stoppingDistance: 0.2
   moveSpeed: 0.7
   flipSprite: 1
+  rotateToTarget: 0
