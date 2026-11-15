@@ -143,7 +143,7 @@ public class Attack : MonoBehaviour
         float directDamage = weapon.weaponName == "hammer"
             ? 1 + currentDamageBuff
             : weapon.damageInHits + currentDamageBuff + movement.ComboDamageBonus;
-        target.TakeSwordHit((int)directDamage);
+        //target.TakeSwordHit((int)directDamage);
 
         switch (weapon.weaponName)
         {

@@ -15,7 +15,7 @@ public class Movement : MonoBehaviour
     [Header("Dash Settings")]
     [SerializeField] private float dashSpeed = 20f;
     [SerializeField] private float maxDashSpeed = 40f;
-    [SerializeField] private float dashDuration = 0.2f;
+    [SerializeField] private float dashDuration = 0.3f;
     [SerializeField] private float bounceForce = 25f;
     [SerializeField] private float bounceDuration = 0.3f;
     [SerializeField] private float stunDuration = 1.5f;
@@ -176,7 +176,7 @@ public class Movement : MonoBehaviour
 
     private IEnumerator BounceBack()
     {
-        float currentBounceForce = bounceForce * Mathf.Pow(1.3f, comboStacks - 1);
+        float currentBounceForce = bounceForce;
         float elapsed = 0f;
         while (elapsed < bounceDuration)
         {
