@@ -47717,8 +47717,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.00048828, y: -121}
-  m_SizeDelta: {x: 800, y: 208}
+  m_AnchoredPosition: {x: 0.9265, y: -125}
+  m_SizeDelta: {x: 605.3449, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &651417886
 MonoBehaviour:
@@ -47732,6 +47732,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b50121a1a8b39fe428ca7b5b8a8a5598, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  typingSpeed: 0.03
+  mainMenuSceneName: Main Menu
 --- !u!114 &651417887
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -55874,6 +55876,8 @@ MonoBehaviour:
   shieldHealth: 0
   regenSpeed: 0.5
   regenMult: 0
+  canvas: {fileID: 0}
+  deathCanvas: {fileID: 0}
 --- !u!58 &1536065566
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -55986,14 +55990,14 @@ MonoBehaviour:
     offset: {x: 0.7, y: 0}
     scale: {x: 3.2, y: 3.2, z: 1}
     spriteAngleOffset: -90
-  startingWeaponIndex: 4
+  startingWeaponIndex: 0
   behindEnemySearchDistance: 1.25
   behindEnemySideTolerance: 0.4
-  hammerSplashRadius: 0.75
+  hammerSplashRadius: 0.29
   wallCollisionMask:
     serializedVersion: 2
     m_Bits: 8
-  wallClearance: 0.04
+  wallClearance: 0.19
   equippedWeaponIndex: -1
 --- !u!114 &1536065569
 MonoBehaviour:
@@ -56008,6 +56012,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Movement
   score: {fileID: 1038862628}
+  EHM: {fileID: 0}
   speed: 3
   baseDamage: 10
   dashSpeed: 10
@@ -56498,7 +56503,7 @@ RectTransform:
   m_GameObject: {fileID: 1958286178}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 131623532}

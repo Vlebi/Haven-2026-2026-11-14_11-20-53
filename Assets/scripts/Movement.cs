@@ -45,6 +45,10 @@ public class Movement : MonoBehaviour
     {
         cam = Camera.main;
         rb = GetComponent<Rigidbody2D>();
+        if (score == null)
+        {
+            score = FindFirstObjectByType<score>();
+        }
     }
 
     void Update()
@@ -58,7 +62,7 @@ public class Movement : MonoBehaviour
 
         horizontal = Input.GetAxisRaw("Horizontal");
         vertical = Input.GetAxisRaw("Vertical");
-        if (score.timePassedBetweenDash >= 1.5f)
+        if (score != null && score.timePassedBetweenDash >= 1.5f)
         {
             dashSpeed = 10;
         }
@@ -102,7 +106,10 @@ public class Movement : MonoBehaviour
         if (isDashing && !hitEnemyThisDash && collision.gameObject.CompareTag("Enemy"))
         {
             hitEnemyThisDash = true;
-            score.timePassedBetweenDash = 0;
+            if (score != null)
+            {
+                score.timePassedBetweenDash = 0;
+            }
 
             if (activeDashCoroutine != null)
             {
