@@ -13,11 +13,11 @@ public class Movement : MonoBehaviour
     public float baseDamage = 10f;
 
     [Header("Dash Settings")]
-    [SerializeField] private float dashSpeed = 15f;
-    [SerializeField] private float maxDashSpeed = 30f;
+    [SerializeField] private float dashSpeed = 20f;
+    [SerializeField] private float maxDashSpeed = 40f;
     [SerializeField] private float dashDuration = 0.2f;
-    [SerializeField] private float bounceForce = 10f;
-    [SerializeField] private float bounceDuration = 0.15f;
+    [SerializeField] private float bounceForce = 25f;
+    [SerializeField] private float bounceDuration = 0.3f;
     [SerializeField] private float stunDuration = 1.5f;
     [SerializeField] private float dashBufferTime = 0.15f;
     public bool isInvincible = false;
@@ -42,6 +42,8 @@ public class Movement : MonoBehaviour
     private float currentDashSpeed;
 
     public float CurrentDamage => baseDamage + (comboStacks * damageBonusPerHit);
+    public int ComboDamageBonus => Mathf.RoundToInt(comboStacks * damageBonusPerHit);
+    public bool IsDashing => isDashing;
 
     void Start()
     {
@@ -141,29 +143,45 @@ public class Movement : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (isDashing && !hitEnemyThisDash && collision.gameObject.CompareTag("Enemy"))
+        if (collision.collider.GetComponentInParent<EnemyHealthManager>() == null)
+            return;
+
+        foreach (Collider2D playerCollider in GetComponentsInChildren<Collider2D>())
         {
-            hitEnemyThisDash = true;
-            if (score != null)
-            {
-                score.timePassedBetweenDash = 0;
-            }
-            if (activeDashCoroutine != null)
-            {
-                StopCoroutine(activeDashCoroutine);
-            }
-            comboStacks++;
-            StartCoroutine(BounceBack());
+            if (playerCollider.enabled && !playerCollider.isTrigger && !collision.collider.isTrigger)
+                Physics2D.IgnoreCollision(playerCollider, collision.collider, true);
         }
+
+        if (isDashing && !hitEnemyThisDash)
+            RegisterDashHit();
+    }
+
+    public void RegisterDashHit()
+    {
+        if (!isDashing || hitEnemyThisDash)
+            return;
+
+        hitEnemyThisDash = true;
+        if (score != null)
+            score.timePassedBetweenDash = 0;
+        if (activeDashCoroutine != null)
+        {
+            StopCoroutine(activeDashCoroutine);
+            activeDashCoroutine = null;
+        }
+
+        comboStacks++;
+        StartCoroutine(BounceBack());
     }
 
     private IEnumerator BounceBack()
     {
+        float currentBounceForce = bounceForce * Mathf.Pow(1.3f, comboStacks - 1);
         float elapsed = 0f;
         while (elapsed < bounceDuration)
         {
             // Smoothly decay the bounce velocity instead of abruptly stopping at zero
-            float currentBounce = Mathf.Lerp(bounceForce, 0f, elapsed / bounceDuration);
+            float currentBounce = Mathf.Lerp(currentBounceForce, 0f, elapsed / bounceDuration);
             rb.linearVelocity = -lastDashDirection * currentBounce;
 
             elapsed += Time.fixedDeltaTime;

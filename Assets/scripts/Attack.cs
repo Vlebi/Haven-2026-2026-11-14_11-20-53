@@ -126,6 +126,10 @@ public class Attack : MonoBehaviour
         if (weaponBlockedByWall || weaponHitbox == null || !weaponHitbox.enabled)
             return;
 
+        Movement movement = GetComponent<Movement>();
+        if (movement == null || !movement.IsDashing)
+            return;
+
         WeaponDefinition weapon = EquippedWeapon;
         if (weapon == null)
             return;
@@ -134,9 +138,11 @@ public class Attack : MonoBehaviour
         if (target == null)
             return;
 
+        movement.RegisterDashHit();
+
         int directDamage = weapon.weaponName == "hammer"
             ? 1 + currentDamageBuff
-            : weapon.damageInHits + currentDamageBuff;
+            : weapon.damageInHits + currentDamageBuff + movement.ComboDamageBonus;
         target.TakeSwordHit(directDamage);
 
         switch (weapon.weaponName)

@@ -14,6 +14,7 @@ public class EnemyHealthManager : MonoBehaviour
     private score score;
     private Coroutine hitReactionCoroutine;
     private bool movementWasEnabled;
+    private bool isDead;
 
    public EnemySpawn enemySpawn;
     private void Awake()
@@ -25,13 +26,15 @@ public class EnemyHealthManager : MonoBehaviour
 
     public void TakeSwordHit(int hitDamage = 1)
     {
+        if (isDead)
+            return;
+
         hitsRemaining -= Mathf.Max(1, hitDamage);
         if (hitsRemaining <= 0)
         {
-            foreach (Collider2D playerCollider in GetComponentsInChildren<Collider2D>())
-                playerCollider.enabled = false;
-            foreach (SpriteRenderer playerRenderer in GetComponentsInChildren<SpriteRenderer>())
-                playerRenderer.enabled = false;
+            isDead = true;
+            gameObject.SetActive(false);
+
             TryDropWeapon();
 
             score = FindFirstObjectByType<score>();
