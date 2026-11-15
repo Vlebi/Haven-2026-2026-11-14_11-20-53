@@ -899,8 +899,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -66, y: -474}
-  m_SizeDelta: {x: 349.98242, y: 302.6184}
+  m_AnchoredPosition: {x: -604.92236, y: -635.19574}
+  m_SizeDelta: {x: 690.138, y: 276.227}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &378889049
 MonoBehaviour:
@@ -917,8 +917,42 @@ MonoBehaviour:
   tutorialPanel: {fileID: 378889047}
   tutorialText: {fileID: 1406703142}
   tutorialLines:
-  - "Press wasd to move\n\nSurvive\n\nPress M1 to dash\n\nthere \n\nYpu can pick
-    up items with F\n\nUse your ability with E\n\nEnjoy\n\n"
+  - 'Press wasd to move                        Press M1 to dash
+
+
+
+
+    Survive
+
+
+
+
+    Ypu
+    can pick up items with F
+
+
+
+
+
+    Use your ability with E
+
+
+
+
+    Items
+
+
+
+
+
+
+
+    Cards
+
+
+
+
+    Enjoy'
 --- !u!114 &378889050
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2508,8 +2542,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 509d21f4947a96e48a411ee9cb67c990, type: 2}
+  m_sharedMaterial: {fileID: -3280892773538166253, guid: 509d21f4947a96e48a411ee9cb67c990, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2533,13 +2567,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 40
+  m_fontSizeBase: 40
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 9
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
