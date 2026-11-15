@@ -210,7 +210,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 5404754231608079631}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.225
+  m_Radius: 0.1
   m_Speed: 1.5
   m_Acceleration: 8
   avoidancePriority: 50
@@ -237,5 +237,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyFollow
   playerTag: Player
   stoppingDistance: 1
-  moveSpeed: 3.5
+  moveSpeed: 1.5
   flipSprite: 1
