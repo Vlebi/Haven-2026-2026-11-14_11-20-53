@@ -1,21 +1,25 @@
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
-//balls, greasy ones in fact
+
 public class Movement : MonoBehaviour
 {
     public score score;
     public EnemyHealthManager EHM;
+
     [Header("Movement & Combat")]
     public float speed = 5f;
+    [SerializeField] private float acceleration = 60f;
+    [SerializeField] private float deceleration = 70f;
     public float baseDamage = 10f;
 
     [Header("Dash Settings")]
-    [SerializeField] private float dashSpeed = 5f;
+    [SerializeField] private float dashSpeed = 15f;
+    [SerializeField] private float maxDashSpeed = 30f;
     [SerializeField] private float dashDuration = 0.2f;
     [SerializeField] private float bounceForce = 10f;
     [SerializeField] private float bounceDuration = 0.15f;
-    [SerializeField] private float stunDuration = 3f;
+    [SerializeField] private float stunDuration = 1.5f;
+    [SerializeField] private float dashBufferTime = 0.15f;
     public bool isInvincible = false;
 
     [Header("Combo")]
@@ -24,27 +28,29 @@ public class Movement : MonoBehaviour
 
     private Rigidbody2D rb;
     private Camera cam;
-    private Vector2 movement;
-    private float horizontal;
-    private float vertical;
-    float time;
+    private Vector2 moveInput;
 
     private bool canDash = true;
     private bool isDashing;
     private bool isStunned;
     private bool hitEnemyThisDash;
-    private int comboStacks = 0;
+    private float dashBufferCounter;
 
+    private int comboStacks = 0;
     private Vector2 lastDashDirection;
     private Coroutine activeDashCoroutine;
+    private float currentDashSpeed;
 
-    public float CurrentDSpeed => dashSpeed + (comboStacks * speedBonusPerHit);
     public float CurrentDamage => baseDamage + (comboStacks * damageBonusPerHit);
 
     void Start()
     {
         cam = Camera.main;
         rb = GetComponent<Rigidbody2D>();
+
+        // Ensures smooth movement between physics frames
+        rb.interpolation = RigidbodyInterpolation2D.Interpolate;
+
         if (score == null)
         {
             score = FindFirstObjectByType<score>();
@@ -53,18 +59,25 @@ public class Movement : MonoBehaviour
 
     void Update()
     {
-        if (isDashing || isStunned) return;
+        // Always capture movement input so there's no dead frame after a dash/stun
+        moveInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized;
 
-        if (Input.GetMouseButtonDown(0) && canDash)
+        // Buffer the dash click so clicking slightly early still triggers it
+        if (Input.GetMouseButtonDown(0))
         {
-            activeDashCoroutine = StartCoroutine(DashTowardsMouse());
+            dashBufferCounter = dashBufferTime;
+        }
+        else
+        {
+            dashBufferCounter -= Time.deltaTime;
         }
 
-        horizontal = Input.GetAxisRaw("Horizontal");
-        vertical = Input.GetAxisRaw("Vertical");
-        if (score != null && score.timePassedBetweenDash >= 1.5f)
+        if (isDashing || isStunned) return;
+
+        if (dashBufferCounter > 0f && canDash)
         {
-            dashSpeed = 10;
+            dashBufferCounter = 0f;
+            activeDashCoroutine = StartCoroutine(DashTowardsMouse());
         }
     }
 
@@ -72,8 +85,25 @@ public class Movement : MonoBehaviour
     {
         if (isDashing || isStunned) return;
 
-        movement = new Vector2(horizontal, vertical).normalized;
-        rb.linearVelocity = movement * speed;
+        // Smooth acceleration and deceleration instead of instant velocity snapping
+        Vector2 targetVelocity = moveInput * speed;
+        float accelRate = (moveInput.magnitude > 0.01f) ? acceleration : deceleration;
+
+        rb.linearVelocity = Vector2.MoveTowards(rb.linearVelocity, targetVelocity, accelRate * Time.fixedDeltaTime);
+    }
+
+    private void CalculateDashSpeed()
+    {
+        if (score != null && score.timePassedBetweenDash <= 1.5f)
+        {
+            // Fixed: Uses speedBonusPerHit instead of damageBonusPerHit, and caps at maxDashSpeed
+            currentDashSpeed = Mathf.Min(dashSpeed + (comboStacks * speedBonusPerHit), maxDashSpeed);
+        }
+        else
+        {
+            comboStacks = 0; // Reset combo if too much time passed
+            currentDashSpeed = dashSpeed;
+        }
     }
 
     private IEnumerator DashTowardsMouse()
@@ -83,17 +113,25 @@ public class Movement : MonoBehaviour
         isDashing = true;
         hitEnemyThisDash = false;
 
+        CalculateDashSpeed();
+
         Vector3 mouseWorldPos = cam.ScreenToWorldPoint(Input.mousePosition);
         mouseWorldPos.z = transform.position.z;
         lastDashDirection = (mouseWorldPos - transform.position).normalized;
 
-        rb.linearVelocity = lastDashDirection * CurrentDSpeed;
+        float elapsed = 0f;
+        while (elapsed < dashDuration)
+        {
+            // Slight ease-out curve during the dash feels much punchier than flat speed
+            float speedMultiplier = Mathf.Lerp(1.2f, 0.8f, elapsed / dashDuration);
+            rb.linearVelocity = lastDashDirection * (currentDashSpeed * speedMultiplier);
 
-        yield return new WaitForSeconds(dashDuration);
+            elapsed += Time.fixedDeltaTime;
+            yield return new WaitForFixedUpdate();
+        }
 
         if (!hitEnemyThisDash)
         {
-            rb.linearVelocity = Vector2.zero;
             isDashing = false;
             isInvincible = false;
             comboStacks = 0;
@@ -110,12 +148,10 @@ public class Movement : MonoBehaviour
             {
                 score.timePassedBetweenDash = 0;
             }
-
             if (activeDashCoroutine != null)
             {
                 StopCoroutine(activeDashCoroutine);
             }
-
             comboStacks++;
             StartCoroutine(BounceBack());
         }
@@ -123,28 +159,36 @@ public class Movement : MonoBehaviour
 
     private IEnumerator BounceBack()
     {
-        rb.linearVelocity = -lastDashDirection * bounceForce;
+        float elapsed = 0f;
+        while (elapsed < bounceDuration)
+        {
+            // Smoothly decay the bounce velocity instead of abruptly stopping at zero
+            float currentBounce = Mathf.Lerp(bounceForce, 0f, elapsed / bounceDuration);
+            rb.linearVelocity = -lastDashDirection * currentBounce;
 
-        yield return new WaitForSeconds(bounceDuration);
+            elapsed += Time.fixedDeltaTime;
+            yield return new WaitForFixedUpdate();
+        }
 
-        rb.linearVelocity = Vector2.zero;
         isDashing = false;
         canDash = true;
         isInvincible = false;
-    }
-    private void BounceRedirection()
-    {
-
     }
 
     private IEnumerator StunPlayer()
     {
         comboStacks = 0;
         isStunned = true;
+
+        // Slide to a stop briefly rather than hitting an invisible brick wall
+        while (rb.linearVelocity.magnitude > 0.1f)
+        {
+            rb.linearVelocity = Vector2.MoveTowards(rb.linearVelocity, Vector2.zero, deceleration * Time.fixedDeltaTime);
+            yield return new WaitForFixedUpdate();
+        }
         rb.linearVelocity = Vector2.zero;
 
         yield return new WaitForSeconds(stunDuration);
-
         isStunned = false;
         canDash = true;
         isInvincible = false;
