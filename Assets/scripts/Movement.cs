@@ -1,6 +1,7 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
-
+//balls, greasy ones in fact
 public class Movement : MonoBehaviour
 {
     public score score;
@@ -9,7 +10,7 @@ public class Movement : MonoBehaviour
     public float baseDamage = 10f;
 
     [Header("Dash Settings")]
-    [SerializeField] private float dashSpeed = 20f;
+    [SerializeField] private float dashSpeed = 10f;
     [SerializeField] private float dashDuration = 0.2f;
     [SerializeField] private float bounceForce = 12f;
     [SerializeField] private float bounceDuration = 0.15f;
@@ -55,7 +56,12 @@ public class Movement : MonoBehaviour
 
         horizontal = Input.GetAxisRaw("Horizontal");
         vertical = Input.GetAxisRaw("Vertical");
+        if (score.timePassedBetweenDash >= 1.5f)
+        {
+            dashSpeed = 10;
+        }
     }
+    
 
     void FixedUpdate()
     {

@@ -16,15 +16,14 @@ public class score : MonoBehaviour
         {
             scoreStreak = 4;
         }
-        Debug.Log(currentscore);
+        timePassedBetweenDash += Time.deltaTime;
     }
     public void scoreStreakSystem()
     {
-        timePassedBetweenDash = Time.time;
-        if (EHM.HitsRemainging <= 0 && timePassedBetweenDash >= 1.5f)
+        if (EHM.hitsRemaining <= 0 && timePassedBetweenDash >= 1.5f)
         {
+            
             scoreStreak++;
-            Debug.Log("Streak =" + scoreStreak);
             timePassedBetweenDash = 0;
         }
         else
