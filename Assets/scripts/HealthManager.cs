@@ -7,9 +7,9 @@ public class HealthManager : MonoBehaviour
     [Header("Health Settings")]
     public float maxHealth = 100;
     public float currentHealth;
-    public Movement movement;
+    [SerializeField] private Movement movement;
     public float shieldHealth;
-    public float regenSpeed = 0.5f;
+    public float regenSpeed = 4f;
     public float regenMult = 1;
     [SerializeField]
     Canvas canvas;
@@ -21,9 +21,9 @@ public class HealthManager : MonoBehaviour
     private Coroutine hitMarkerCoroutine;
     void Start()
     {
-        
+        StartCoroutine(Regen());
         currentHealth = maxHealth;
-        movement = FindFirstObjectByType<Movement>();
+        
         foreach (Canvas foundCanvas in FindObjectsByType<Canvas>(FindObjectsInactive.Include, FindObjectsSortMode.None))
         {
             if (foundCanvas.CompareTag("Canvas"))
@@ -54,17 +54,17 @@ public class HealthManager : MonoBehaviour
         }
     }
 
-    
+
     public void TakeDamage(float damageAmount)
     {
         if (isDead) return;
         if (movement.isInvincible == true) return;
         ShowHitMarker();
-        if(shieldHealth > 0)
+        if (shieldHealth > 0)
         {
             shieldHealth -= damageAmount;
         }
-        else if(shieldHealth > 0 && shieldHealth < damageAmount)
+        else if (shieldHealth > 0 && shieldHealth < damageAmount)
         {
             damageAmount -= shieldHealth;
             currentHealth -= shieldHealth;
@@ -102,10 +102,10 @@ public class HealthManager : MonoBehaviour
     private void Die()
     {
         if (isDead) return;
-        
+
         isDead = true;
         funfacter funfacter;
-       
+
         funfacter = gameObject.GetComponent<funfacter>();
         funfacter.updateFunFact();
         Debug.Log($"{gameObject.name} died!");
@@ -129,9 +129,16 @@ public class HealthManager : MonoBehaviour
     {
         SceneManager.LoadScene("MainMenu");
     }
-     public IEnumerator Regen()
-     {
-      currentHealth += regenSpeed * regenMult;
-     yield return new WaitForSecondsRealtime(1);
-     }
+    public IEnumerator Regen()
+    {
+        while (true)
+        {
+            if (!isDead && currentHealth < maxHealth)
+            {
+                currentHealth = Mathf.Min(maxHealth, currentHealth + regenSpeed * regenMult);
+            }
+
+            yield return new WaitForSecondsRealtime(1f);
+        }
+    }
 }

@@ -278,6 +278,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyFollow
   playerTag: Player
-  stoppingDistance: 1
+  playerObjectName: char1
+  stoppingDistance: 0.2
   moveSpeed: 0.7
   flipSprite: 1
