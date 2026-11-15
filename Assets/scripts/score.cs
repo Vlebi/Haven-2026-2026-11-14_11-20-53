@@ -10,7 +10,7 @@ public class score : MonoBehaviour
     public float currentMult = 1;
     public float getScore = 100;
     public float scoreStreak = 1;
-    private TMP_Text scoreText;
+    [SerializeField] private TMP_Text scoreText;
 
     private void Start()
     {
@@ -31,7 +31,7 @@ public class score : MonoBehaviour
     private void UpdateScoreText()
     {
         if (scoreText != null)
-            scoreText.text = $"Score: {currentscore:F0}";
+            scoreText.text = 
     }
     public void scoreStreakSystem()
     {

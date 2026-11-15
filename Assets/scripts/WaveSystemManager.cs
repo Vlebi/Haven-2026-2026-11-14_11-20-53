@@ -27,12 +27,12 @@ public class WaveSystemManager : MonoBehaviour
 
     public int currentWaveIndex = 0;
     private bool isWaveActive = false;
-    private TMP_Text currentWaveText;
+    [SerializeField] private TMP_Text currentWaveText;
 
     void Start()
     {
         currentWaveIndex = BedScript.LoadSavedWave();
-        currentWaveText = RuntimeHudText.GetOrCreate("CurrentWaveText", "Wave: 1", new Vector2(20f, -60f));
+       
         UpdateCurrentWaveText();
         StartCoroutine(StartNextWave());
     }
