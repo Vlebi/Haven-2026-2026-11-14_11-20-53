@@ -10,9 +10,9 @@ public class Movement : MonoBehaviour
     public float baseDamage = 10f;
 
     [Header("Dash Settings")]
-    [SerializeField] private float dashSpeed = 10f;
+    [SerializeField] private float dashSpeed = 5f;
     [SerializeField] private float dashDuration = 0.2f;
-    [SerializeField] private float bounceForce = 12f;
+    [SerializeField] private float bounceForce = 10f;
     [SerializeField] private float bounceDuration = 0.15f;
     [SerializeField] private float stunDuration = 3f;
     public bool isInvincible = false;
@@ -59,6 +59,10 @@ public class Movement : MonoBehaviour
         if (score.timePassedBetweenDash >= 1.5f)
         {
             dashSpeed = 10;
+        }
+        if(hitEnemyThisDash == true)
+        {
+            isStunned = false;
         }
     }
     
@@ -123,6 +127,10 @@ public class Movement : MonoBehaviour
         isDashing = false;
         canDash = true;
         isInvincible = false;
+    }
+    private void BounceRedirection()
+    {
+
     }
 
     private IEnumerator StunPlayer()
