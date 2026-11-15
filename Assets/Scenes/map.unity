@@ -54853,7 +54853,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 1.40625
+  orthographic size: 11
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -55614,14 +55614,14 @@ MonoBehaviour:
     offset: {x: 0.7, y: 0}
     scale: {x: 3.2, y: 3.2, z: 1}
     spriteAngleOffset: -90
-  - weaponName: short_swd
+  - weaponName: hammer
     tile: {fileID: 11400000, guid: 9860fde75af9bfe4f9058abb1e544ee1, type: 2}
     tier: 4
     damageInHits: 9
     offset: {x: 0.7, y: 0}
     scale: {x: 3.2, y: 3.2, z: 1}
     spriteAngleOffset: -90
-  startingWeaponIndex: 0
+  startingWeaponIndex: 4
   behindEnemySearchDistance: 1.25
   behindEnemySideTolerance: 0.4
   hammerSplashRadius: 0.75
