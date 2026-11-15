@@ -10,13 +10,13 @@ public class Attack : MonoBehaviour
         public string weaponName;
         public TileBase tile;
         [Min(0)] public int tier = 1;
-        [Min(1)] public int damageInHits = 1;
+        [Min(1)] public float damageInHits = 1;
         public Vector2 offset = new Vector2(0.45f, 0f);
         public Vector3 scale = Vector3.one;
         public float spriteAngleOffset;
     }
 
-    public int currentDamageBuff = 0;
+    public float currentDamageBuff = 0;
 
     [SerializeField] public List<WeaponDefinition> weapons = new List<WeaponDefinition>();
     [SerializeField] private int startingWeaponIndex;
@@ -140,10 +140,10 @@ public class Attack : MonoBehaviour
 
         movement.RegisterDashHit();
 
-        int directDamage = weapon.weaponName == "hammer"
+        float directDamage = weapon.weaponName == "hammer"
             ? 1 + currentDamageBuff
             : weapon.damageInHits + currentDamageBuff + movement.ComboDamageBonus;
-        target.TakeSwordHit(directDamage);
+        target.TakeSwordHit((int)directDamage);
 
         switch (weapon.weaponName)
         {
