@@ -32,7 +32,7 @@ public class WaveSystemManager : MonoBehaviour
     void Start()
     {
         currentWaveIndex = BedScript.LoadSavedWave();
-       
+        isWaveActive = true;
         UpdateCurrentWaveText();
         StartCoroutine(StartNextWave());
     }

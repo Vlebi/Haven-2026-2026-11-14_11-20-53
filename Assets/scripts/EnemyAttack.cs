@@ -12,6 +12,7 @@ public class EnemyAttack : MonoBehaviour
     // OnTriggerStay2D akkor fut le, ha egy "Is Trigger" collider belép a játékosba
     void OnTriggerStay2D(Collider2D other)
     {
+        Debug.Log("trigger stay");
         // Megnézzük, hogy maga az objektum vagy a szülője a "char1"-e
         if (other.gameObject.name == targetName || (other.transform.parent != null && other.transform.parent.name == targetName))
         {

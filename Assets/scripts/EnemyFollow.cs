@@ -17,6 +17,8 @@ public class EnemyFollow : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private Rigidbody2D rb;
 
+
+
     private void Awake()
     {
         Debug.Log("EnemyFollow started", this);
@@ -25,6 +27,16 @@ public class EnemyFollow : MonoBehaviour
         rb.gravityScale = 0f; // remove if you want gravity
     }
 
+    private void LateUpdate()
+    {
+        
+
+    }
+
+    private void Update()
+    {
+        
+    }
     private void FixedUpdate()
     {
         if (playerTransform == null && !FindPlayer())
