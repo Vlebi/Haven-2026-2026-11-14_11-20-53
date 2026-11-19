@@ -7,10 +7,12 @@ public class HealthManager : MonoBehaviour
     [Header("Health Settings")]
     public float maxHealth = 100;
     public float currentHealth;
+    [SerializeField, Range(0f, 1f)] private float lowHealthColorPreservation = 0f;
+    [SerializeField, Range(0f, 1f)] private float noColorHealthThreshold = 0.1f;
+    [SerializeField] private Material graphiteMaterial;
     [SerializeField] private Movement movement;
+    private float originalColorPreservation;
     public float shieldHealth;
-    public float regenSpeed = 4f;
-    public float regenMult = 1;
     [SerializeField]
     Canvas canvas;
     [SerializeField]
@@ -19,11 +21,27 @@ public class HealthManager : MonoBehaviour
     [SerializeField, Min(0f)] private float hitMarkerDuration = 0.2f;
     private bool isDead;
     private Coroutine hitMarkerCoroutine;
+    private MusicManager musicManager;
+    private SpriteRenderer[] playerRenderers;
+    private Color[] baseRendererColors;
+    private int lastLoggedHealthBand = -1;
+    private bool loggedMissingMusicManager;
+    private bool isPlayer;
+
     void Start()
     {
-        StartCoroutine(Regen());
+        isPlayer = CompareTag("Player");
         currentHealth = maxHealth;
-        
+        musicManager = MusicManager.Instance;
+        playerRenderers = GetComponentsInChildren<SpriteRenderer>(true);
+        baseRendererColors = new Color[playerRenderers.Length];
+        for (int i = 0; i < playerRenderers.Length; i++)
+            baseRendererColors[i] = playerRenderers[i].color;
+        if (graphiteMaterial != null)
+            originalColorPreservation = graphiteMaterial.GetFloat("_ColorPreservation");
+        UpdateGraphiteColorPreservation();
+        Debug.Log($"HealthManager '{gameObject.name}' started. HP: {currentHealth}/{maxHealth}, MusicManager: {(musicManager != null ? musicManager.name : "NOT FOUND")}, GraphiteMaterial: {(graphiteMaterial != null ? graphiteMaterial.name : "NOT ASSIGNED")}", this);
+
         foreach (Canvas foundCanvas in FindObjectsByType<Canvas>(FindObjectsInactive.Include, FindObjectsSortMode.None))
         {
             if (foundCanvas.CompareTag("Canvas"))
@@ -39,6 +57,66 @@ public class HealthManager : MonoBehaviour
         if (canvas != null) canvas.gameObject.SetActive(true);
         if (deathCanvas != null) deathCanvas.gameObject.SetActive(false);
         if (hitMarker != null) hitMarker.SetActive(false);
+    }
+
+    private void Update()
+    {
+        UpdateGraphiteColorPreservation();
+        if (!isPlayer)
+            return;
+
+        if (musicManager == null)
+            musicManager = MusicManager.Instance;
+        float healthPercent = maxHealth > 0f ? Mathf.Clamp01(currentHealth / maxHealth) : 0f;
+        int healthBand = Mathf.Clamp(Mathf.FloorToInt(healthPercent * 10f), 0, 10);
+        if (healthBand != lastLoggedHealthBand)
+        {
+            lastLoggedHealthBand = healthBand;
+            Debug.Log($"HealthManager '{gameObject.name}' health: {healthPercent:P0} ({currentHealth:F1}/{maxHealth:F1}), MusicManager: {(musicManager != null ? musicManager.name : "NOT FOUND")}", this);
+        }
+        if (musicManager != null)
+            musicManager.ApplyHealthMood(healthPercent);
+        else if (!loggedMissingMusicManager)
+        {
+            loggedMissingMusicManager = true;
+            Debug.LogWarning($"HealthManager '{gameObject.name}' cannot apply music mood: MusicManager.Instance is null.", this);
+        }
+        UpdateLowHealthPulse(healthPercent);
+    }
+
+    private void UpdateLowHealthPulse(float healthPercent)
+    {
+        float danger = 1f - healthPercent;
+        float pulse = 1f - (danger * 0.35f * (0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * 6f)));
+        for (int i = 0; i < playerRenderers.Length; i++)
+        {
+            SpriteRenderer renderer = playerRenderers[i];
+            if (renderer != null && renderer.enabled)
+            {
+                Color baseColor = baseRendererColors[i];
+                renderer.color = new Color(
+                    baseColor.r * pulse,
+                    baseColor.g * pulse,
+                    baseColor.b * pulse,
+                    baseColor.a);
+            }
+        }
+    }
+
+    private void UpdateGraphiteColorPreservation()
+    {
+        float healthPercent = maxHealth > 0f ? Mathf.Clamp01(currentHealth / maxHealth) : 0f;
+        float healthColorRange = Mathf.Max(0.001f, 1f - noColorHealthThreshold);
+        float colorPreservationFactor = Mathf.Clamp01((healthPercent - noColorHealthThreshold) / healthColorRange);
+        float preservation = Mathf.Lerp(lowHealthColorPreservation, 1f, colorPreservationFactor);
+        if (graphiteMaterial != null)
+            graphiteMaterial.SetFloat("_ColorPreservation", preservation);
+    }
+
+    private void OnDestroy()
+    {
+        if (graphiteMaterial != null)
+            graphiteMaterial.SetFloat("_ColorPreservation", originalColorPreservation);
     }
 
     private void LateUpdate()
@@ -59,19 +137,22 @@ public class HealthManager : MonoBehaviour
     public void TakeDamage(float damageAmount)
     {
         if (isDead) return;
-        if (movement.isInvincible == true) return;
+        if (movement != null && movement.isInvincible) return;
+
+        damageAmount = Mathf.Max(0f, damageAmount);
+        if (damageAmount <= 0f) return;
+
         ShowHitMarker();
-        if (shieldHealth > 0)
+        float absorbedDamage = Mathf.Min(shieldHealth, damageAmount);
+        if (absorbedDamage > 0f)
         {
-            shieldHealth -= damageAmount;
+            shieldHealth = Mathf.Max(0f, shieldHealth - absorbedDamage);
+            damageAmount -= absorbedDamage;
         }
-        else if (shieldHealth > 0 && shieldHealth < damageAmount)
-        {
-            damageAmount -= shieldHealth;
-            currentHealth -= shieldHealth;
-        }
-        currentHealth -= damageAmount;
-        Debug.Log($"{gameObject.name} dealt {damageAmount} damage! Remaining HP: {currentHealth}");
+        if (damageAmount > 0f)
+            currentHealth -= damageAmount;
+        currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
+        Debug.Log($"HealthManager '{gameObject.name}' took {damageAmount} damage. Remaining HP: {currentHealth}/{maxHealth} ({(maxHealth > 0f ? currentHealth / maxHealth : 0f):P0}).", this);
 
         // Ha az életerő eléri a nullát (vagy az alá esik), meghal
         if (currentHealth <= 0)
@@ -79,6 +160,16 @@ public class HealthManager : MonoBehaviour
             Die();
 
         }
+    }
+
+    public void HealPercent(float percentOfMaxHealth)
+    {
+        if (isDead || percentOfMaxHealth <= 0f)
+            return;
+
+        float previousHealth = currentHealth;
+        currentHealth = Mathf.Clamp(currentHealth + (maxHealth * percentOfMaxHealth), 0f, maxHealth);
+        Debug.Log($"HealthManager '{gameObject.name}' healed {percentOfMaxHealth:P0}. HP: {previousHealth:F1} -> {currentHealth:F1}/{maxHealth:F1}.", this);
     }
 
     private void ShowHitMarker()
@@ -129,17 +220,5 @@ public class HealthManager : MonoBehaviour
     void LoadMainMenu()
     {
         SceneManager.LoadScene("MainMenu");
-    }
-    public IEnumerator Regen()
-    {
-        while (true)
-        {
-            if (!isDead && currentHealth < maxHealth)
-            {
-                currentHealth = Mathf.Min(maxHealth, currentHealth + regenSpeed * regenMult);
-            }
-
-            yield return new WaitForSecondsRealtime(1f);
-        }
     }
 }

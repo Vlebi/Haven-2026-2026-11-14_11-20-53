@@ -61,8 +61,22 @@ public class Attack : MonoBehaviour
             return;
 
         Vector3 mouseScreenPosition = Input.mousePosition;
-        mouseScreenPosition.z = Mathf.Abs(cam.transform.position.z - transform.position.z);
+        float depth = Mathf.Abs(cam.transform.position.z - transform.position.z);
+        if (float.IsNaN(mouseScreenPosition.x) || float.IsInfinity(mouseScreenPosition.x) ||
+            float.IsNaN(mouseScreenPosition.y) || float.IsInfinity(mouseScreenPosition.y) ||
+            float.IsNaN(depth) || float.IsInfinity(depth))
+        {
+            return;
+        }
+
+        mouseScreenPosition.z = depth;
         Vector3 mouseWorldPosition = cam.ScreenToWorldPoint(mouseScreenPosition);
+        if (float.IsNaN(mouseWorldPosition.x) || float.IsInfinity(mouseWorldPosition.x) ||
+            float.IsNaN(mouseWorldPosition.y) || float.IsInfinity(mouseWorldPosition.y))
+        {
+            return;
+        }
+
         Vector2 direction = (Vector2)mouseWorldPosition - (Vector2)transform.position;
         if (direction.sqrMagnitude < 0.0001f)
             return;
@@ -127,7 +141,7 @@ public class Attack : MonoBehaviour
             return;
 
         Movement movement = GetComponent<Movement>();
-        if (movement == null || !movement.IsDashing)
+        if (movement == null || !movement.IsDamageDash)
             return;
 
         WeaponDefinition weapon = EquippedWeapon;

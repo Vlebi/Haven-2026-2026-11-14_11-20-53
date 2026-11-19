@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.AI;
 using System.Collections;
 using TMPro;
 
@@ -15,7 +16,7 @@ public class Wave
 
 public class WaveSystemManager : MonoBehaviour
 {
-    private const int SpawnPositionAttempts = 30;
+    private const int SpawnPositionAttempts = 80;
 
     [Header("Wave Settings")]
     public Wave[] waves;
@@ -24,96 +25,198 @@ public class WaveSystemManager : MonoBehaviour
     [Header("Spawn Settings")]
     public float spawnBuffer = 1f;
     public string enemyTag = "Enemy";
+    [Min(0)] public int remainingEnemyGrace = 3;
 
-    public int currentWaveIndex = 0;
+    [Header("Testing")]
+    [SerializeField] private bool useInspectorWaveForTesting;
+    public int currentWaveIndex = 7;
     private bool isWaveActive = false;
+    private bool isSpawningWave;
+    private int completedWaveCycles;
+    private int enemyCountMultiplier = 1;
+    public int CompletedWaveCycles => completedWaveCycles;
     [SerializeField] private TMP_Text currentWaveText;
+    [SerializeField] private TMP_Text enemyRemainingText;
 
     void Start()
     {
-        currentWaveIndex = BedScript.LoadSavedWave();
-        isWaveActive = true;
-        UpdateCurrentWaveText();
+        if (waves == null || waves.Length == 0)
+        {
+            Debug.LogError("No waves are configured; the wave system cannot start.", this);
+            enabled = false;
+            return;
+        }
+
+        int startingWaveIndex = useInspectorWaveForTesting
+            ? currentWaveIndex
+            : BedScript.LoadSavedWave();
+        currentWaveIndex = Mathf.Clamp(startingWaveIndex, 0, waves.Length - 1);
+        completedWaveCycles = useInspectorWaveForTesting
+            ? 0
+            : Mathf.Max(0, BedScript.LoadSavedWaveCycle());
+        for (int cycle = 0; cycle < completedWaveCycles && enemyCountMultiplier <= int.MaxValue / 2; cycle++)
+            enemyCountMultiplier *= 2;
+        enemyRemainingText = RuntimeHudText.GetOrCreate(
+            "EnemyRemainingText", "Enemies remaining: 0", new Vector2(20f, -55f));
+        TMP_FontAsset pijamasFont = Resources.Load<TMP_FontAsset>("Fonts & Materials/Pijamas-ejPO SDF");
+        if (enemyRemainingText != null)
+        {
+            if (pijamasFont != null)
+                enemyRemainingText.font = pijamasFont;
+            enemyRemainingText.fontSize = 36f;
+            enemyRemainingText.fontStyle = FontStyles.Bold;
+        }
+        UpdateHud(0);
         StartCoroutine(StartNextWave());
     }
 
     void Update()
     {
-        if (isWaveActive && GameObject.FindGameObjectsWithTag(enemyTag).Length == 0)
+        int remainingEnemies = CountTopLevelEnemies();
+        UpdateHud(remainingEnemies);
+
+        if (isWaveActive && !isSpawningWave)
         {
-            isWaveActive = false;
-            currentWaveIndex++;
-            StartCoroutine(StartNextWave());
+            bool shouldAdvance = remainingEnemies == 0;
+            Wave currentWave = waves[currentWaveIndex];
+            int waveEnemyCount = GetWaveEnemyCount(currentWave);
+            if (!shouldAdvance && CanUseRemainingEnemyGrace(currentWave, waveEnemyCount))
+                shouldAdvance = remainingEnemies <= remainingEnemyGrace;
+
+            if (shouldAdvance)
+            {
+                isWaveActive = false;
+                currentWaveIndex++;
+                if (currentWaveIndex >= waves.Length)
+                {
+                    currentWaveIndex = 0;
+                    completedWaveCycles++;
+                    enemyCountMultiplier = enemyCountMultiplier <= int.MaxValue / 2
+                        ? enemyCountMultiplier * 2
+                        : int.MaxValue;
+                    Debug.Log($"All waves cleared! Starting cycle {completedWaveCycles + 1} with {enemyCountMultiplier}x enemy counts.", this);
+                }
+                StartCoroutine(StartNextWave());
+            }
         }
+    }
+
+    private bool CanUseRemainingEnemyGrace(Wave wave, int waveEnemyCount)
+    {
+        return remainingEnemyGrace > 0
+            && wave.enemyCount > remainingEnemyGrace
+            && waveEnemyCount > remainingEnemyGrace;
+    }
+
+    private int GetWaveEnemyCount(Wave wave)
+    {
+        if (wave.enemyCount <= 0)
+            return wave.enemyCount;
+
+        return wave.enemyCount > int.MaxValue / enemyCountMultiplier
+            ? int.MaxValue
+            : wave.enemyCount * enemyCountMultiplier;
     }
 
     IEnumerator StartNextWave()
     {
-        if (currentWaveIndex < waves.Length)
+        if (currentWaveIndex >= 0 && currentWaveIndex < waves.Length)
         {
-            Debug.Log($"Next wave starting: {waves[currentWaveIndex].waveName}");
+            Wave wave = waves[currentWaveIndex];
+            int waveEnemyCount = GetWaveEnemyCount(wave);
+            Debug.Log($"Next wave starting: {wave.waveName} ({waveEnemyCount} enemies)");
+            UpdateCurrentWaveText();
             yield return new WaitForSeconds(timeBetweenWaves);
-            yield return StartCoroutine(SpawnWave(waves[currentWaveIndex]));
-        }
-        else
-        {
-            Debug.Log("You defeated the Boss! Victory!");
-            if (currentWaveText != null)
-                currentWaveText.text = "Victory!";
+            yield return StartCoroutine(SpawnWave(wave, waveEnemyCount));
         }
     }
 
     private void UpdateCurrentWaveText()
     {
-        if (currentWaveText != null)
-            currentWaveText.text = $"Wave: {currentWaveIndex + 1}";
+        if (currentWaveText == null)
+            return;
+
+        currentWaveText.text = completedWaveCycles == 0
+            ? $"Wave: {currentWaveIndex + 1}"
+            : $"Cycle {completedWaveCycles + 1} - Wave: {currentWaveIndex + 1}";
     }
 
-    IEnumerator SpawnWave(Wave wave)
+    private void UpdateHud(int remainingEnemies)
     {
-        for (int i = 0; i < wave.enemyCount; i++)
+        UpdateCurrentWaveText();
+        if (enemyRemainingText != null)
+            enemyRemainingText.text = $"ENEMIES REMAINING: {remainingEnemies}";
+    }
+
+    private int CountTopLevelEnemies()
+    {
+        int count = 0;
+        foreach (GameObject enemy in GameObject.FindGameObjectsWithTag(enemyTag))
         {
-            SpawnEnemyToScene(wave.enemyPrefab, wave.targetSceneName);
+            Transform parent = enemy.transform.parent;
+            if (parent == null || !parent.CompareTag(enemyTag))
+                count++;
+        }
+
+        return count;
+    }
+
+    IEnumerator SpawnWave(Wave wave, int targetEnemyCount)
+    {
+        isSpawningWave = true;
+        int spawnedCount = 0;
+        for (int i = 0; i < targetEnemyCount; i++)
+        {
+            if (SpawnEnemyToScene(wave.enemyPrefab, wave.targetSceneName))
+                spawnedCount++;
             yield return new WaitForSeconds(wave.spawnDelay);
         }
 
+        isSpawningWave = false;
+        if (spawnedCount < targetEnemyCount)
+        {
+            Debug.LogError($"Wave '{wave.waveName}' only spawned {spawnedCount}/{targetEnemyCount} enemies. It will not advance; check NavMesh coverage and clear spawn space.", this);
+            isWaveActive = false;
+            yield break;
+        }
+
+        Debug.Log($"Wave '{wave.waveName}' spawned {spawnedCount}/{targetEnemyCount} enemy(ies).", this);
         isWaveActive = true;
     }
 
-    private void SpawnEnemyToScene(GameObject prefab, string sceneName)
+    private bool SpawnEnemyToScene(GameObject prefab, string sceneName)
     {
         Scene targetScene = SceneManager.GetSceneByName(sceneName);
 
         if (!targetScene.IsValid() || !targetScene.isLoaded)
         {
-            Debug.LogWarning($"The '{sceneName}' scene is not loaded in the Hierarchy!");
-            return;
+            Debug.LogError($"The '{sceneName}' scene is not loaded; cannot spawn this wave.", this);
+            return false;
         }
 
         if (prefab == null)
         {
-            Debug.LogWarning("No Enemy Prefab assigned for this wave!", this);
-            return;
+            Debug.LogError("No Enemy Prefab assigned for this wave!", this);
+            return false;
         }
 
         if (!TryGetSpawnPosition(targetScene, prefab, out Vector3 spawnPosition))
         {
-            Debug.LogWarning("Could not find a free spawn position on the map (Grid), using fallback position.", this);
-            spawnPosition = GetFallbackOffScreenPosition();
+            Debug.LogError($"No safe, reachable spawn position found for '{prefab.name}'. Enemy was not spawned.", this);
+            return false;
         }
 
         GameObject newEnemy = Instantiate(prefab, spawnPosition, Quaternion.identity);
         SceneManager.MoveGameObjectToScene(newEnemy, targetScene);
+        Debug.Log($"Spawned '{newEnemy.name}' for scene '{sceneName}' at {spawnPosition}.", this);
+        return true;
     }
 
     private bool TryGetSpawnPosition(Scene targetScene, GameObject prefab, out Vector3 spawnPosition)
     {
         spawnPosition = Vector3.zero;
         Camera cam = Camera.main;
-        if (cam == null || prefab == null)
-            return false;
-
-        if (!TryGetMapBounds(targetScene, out Bounds mapBounds))
+        if (cam == null || prefab == null || !TryGetMapBounds(targetScene, out Bounds mapBounds))
             return false;
 
         float cameraDepth = Mathf.Abs(cam.transform.position.z);
@@ -121,35 +224,74 @@ public class WaveSystemManager : MonoBehaviour
         Vector3 topRight = cam.ViewportToWorldPoint(new Vector3(1f, 1f, cameraDepth));
 
         Collider2D enemyCollider = prefab.GetComponent<Collider2D>();
-        Vector2 footprintSize = enemyCollider != null
-            ? enemyCollider.bounds.size
-            : Vector2.one * 0.5f;
+        Vector2 footprintSize = enemyCollider != null ? enemyCollider.bounds.size : Vector2.one * 0.5f;
         Vector2 colliderOffset = enemyCollider != null
             ? (Vector2)(enemyCollider.bounds.center - prefab.transform.position)
             : Vector2.zero;
-
         float marginX = Mathf.Max(spawnBuffer, footprintSize.x * 0.5f);
         float marginY = Mathf.Max(spawnBuffer, footprintSize.y * 0.5f);
         float minX = mapBounds.min.x + footprintSize.x * 0.5f - colliderOffset.x;
         float maxX = mapBounds.max.x - footprintSize.x * 0.5f - colliderOffset.x;
         float minY = mapBounds.min.y + footprintSize.y * 0.5f - colliderOffset.y;
         float maxY = mapBounds.max.y - footprintSize.y * 0.5f - colliderOffset.y;
+        if (minX > maxX || minY > maxY)
+            return false;
 
+        EnemyFollow enemyFollow = prefab.GetComponent<EnemyFollow>();
+        bool requiresNavMesh = enemyFollow != null && enemyFollow.useNavMeshPathfinding;
+        NavMeshAgent prefabAgent = prefab.GetComponent<NavMeshAgent>();
+        int areaMask = prefabAgent != null ? prefabAgent.areaMask : NavMesh.AllAreas;
+        NavMeshPath path = null;
+        Vector3 playerDestination = Vector3.zero;
+        if (requiresNavMesh)
+        {
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            if (player == null || !NavMesh.SamplePosition(player.transform.position, out NavMeshHit playerHit, 2f, areaMask))
+                return false;
+
+            playerDestination = playerHit.position;
+            path = new NavMeshPath();
+        }
+
+        int offscreenAttempts = SpawnPositionAttempts / 2;
         for (int attempt = 0; attempt < SpawnPositionAttempts; attempt++)
         {
-            if (!TryGetCandidatePosition(
-                    Random.Range(0, 4), bottomLeft, topRight,
-                    minX, maxX, minY, maxY, marginX, marginY,
-                    colliderOffset, out Vector2 candidate))
-                continue;
+            Vector2 candidate;
+            if (attempt < offscreenAttempts)
+            {
+                if (!TryGetCandidatePosition(
+                        Random.Range(0, 4), bottomLeft, topRight,
+                        minX, maxX, minY, maxY, marginX, marginY,
+                        colliderOffset, out candidate))
+                    continue;
+            }
+            else
+            {
+                candidate = new Vector2(Random.Range(minX, maxX), Random.Range(minY, maxY));
+            }
+
+            if (requiresNavMesh)
+            {
+                float sampleDistance = Mathf.Max(0.75f, Mathf.Max(footprintSize.x, footprintSize.y));
+                if (!NavMesh.SamplePosition(candidate, out NavMeshHit spawnHit, sampleDistance, areaMask))
+                    continue;
+
+                candidate = spawnHit.position;
+                if (!mapBounds.Contains(candidate))
+                    continue;
+                if (attempt < offscreenAttempts && !IsOutsideCamera(candidate, bottomLeft, topRight, marginX, marginY))
+                    continue;
+                if (!NavMesh.CalculatePath(spawnHit.position, playerDestination, areaMask, path)
+                    || path.status != NavMeshPathStatus.PathComplete)
+                    continue;
+            }
 
             Vector2 colliderCenter = candidate + colliderOffset;
             Collider2D[] overlaps = Physics2D.OverlapBoxAll(colliderCenter, footprintSize, 0f);
             bool isBlocked = false;
-
             foreach (Collider2D overlap in overlaps)
             {
-                if (overlap != null && overlap.enabled && !overlap.isTrigger)
+                if (overlap != null && overlap.enabled && (!overlap.isTrigger || overlap.CompareTag("spikes")))
                 {
                     isBlocked = true;
                     break;
@@ -164,6 +306,12 @@ public class WaveSystemManager : MonoBehaviour
         }
 
         return false;
+    }
+
+    private bool IsOutsideCamera(Vector2 position, Vector3 bottomLeft, Vector3 topRight, float marginX, float marginY)
+    {
+        return position.x < bottomLeft.x - marginX || position.x > topRight.x + marginX
+            || position.y < bottomLeft.y - marginY || position.y > topRight.y + marginY;
     }
 
     private bool TryGetMapBounds(Scene targetScene, out Bounds mapBounds)
@@ -255,24 +403,4 @@ public class WaveSystemManager : MonoBehaviour
         return true;
     }
 
-    private Vector3 GetFallbackOffScreenPosition()
-    {
-        if (Camera.main == null) return Vector3.zero;
-
-        Camera cam = Camera.main;
-        float camHeight = cam.orthographicSize;
-        float camWidth = camHeight * cam.aspect;
-        float spawnX = 0f, spawnY = 0f;
-
-        int side = Random.Range(0, 4);
-        switch (side)
-        {
-            case 0: spawnX = Random.Range(-camWidth, camWidth); spawnY = camHeight + spawnBuffer; break;
-            case 1: spawnX = camWidth + spawnBuffer; spawnY = Random.Range(-camHeight, camHeight); break;
-            case 2: spawnX = Random.Range(-camWidth, camWidth); spawnY = -(camHeight + spawnBuffer); break;
-            case 3: spawnX = -(camWidth + spawnBuffer); spawnY = Random.Range(-camHeight, camHeight); break;
-        }
-
-        return new Vector3(cam.transform.position.x + spawnX, cam.transform.position.y + spawnY, 0f);
-    }
 }

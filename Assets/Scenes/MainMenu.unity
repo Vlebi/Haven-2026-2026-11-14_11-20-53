@@ -536,7 +536,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: If you miss your target and get stunned you will see this icon
+  m_text: Miss a damage dash and you'll be stunned. Hit an enemy to build your combo and charge a utility dash.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 509d21f4947a96e48a411ee9cb67c990, type: 2}
   m_sharedMaterial: {fileID: -3280892773538166253, guid: 509d21f4947a96e48a411ee9cb67c990, type: 2}
@@ -1600,7 +1600,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: tutorial
+  m_text: How to Play
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 509d21f4947a96e48a411ee9cb67c990, type: 2}
   m_sharedMaterial: {fileID: -3280892773538166253, guid: 509d21f4947a96e48a411ee9cb67c990, type: 2}
@@ -2223,10 +2223,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Some enemies drop weapons when killed, its all up to luck. Some weapons
-    are better than other, they might do more damage, or even have cool passives.
-    Like the spear that can hit enemis behind enemis, or the hammer that deal area
-    damage!
+  m_text: Enemies may drop weapons when defeated. Pick them up with F to swap weapons.
+    Each weapon has a different attack style: the spear can hit enemies behind your
+    target, while the hammer damages nearby enemies.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 509d21f4947a96e48a411ee9cb67c990, type: 2}
   m_sharedMaterial: {fileID: -3280892773538166253, guid: 509d21f4947a96e48a411ee9cb67c990, type: 2}
@@ -2619,10 +2618,11 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: This game is all about speed, the less mistakes you make, the more speed
-    you will gain, dashing is a key part to survival, but be carefull! If you miss
-    a dash you  get stunned!  If you kill enough enemis you will advance into the
-    next wave, after every 10 waves you will fight with a boss.
+  m_text: Move with WASD and aim with the mouse. Left-click to dash-attack. A successful
+    hit deals damage, restores 3% of max health, builds combo speed, and charges one
+    right-click utility dash. The utility dash travels farther but cannot damage
+    enemies. Miss a damage dash and you'll be stunned. Every 10th wave is a boss fight;
+    after each boss, waves restart with twice as many enemies.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 509d21f4947a96e48a411ee9cb67c990, type: 2}
   m_sharedMaterial: {fileID: -3280892773538166253, guid: 509d21f4947a96e48a411ee9cb67c990, type: 2}
@@ -2896,7 +2896,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: F - interact
+  m_text: F - interact / pick up
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 509d21f4947a96e48a411ee9cb67c990, type: 2}
   m_sharedMaterial: {fileID: -3280892773538166253, guid: 509d21f4947a96e48a411ee9cb67c990, type: 2}
@@ -3438,7 +3438,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: E - ability
+  m_text: Right-click - utility dash
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 509d21f4947a96e48a411ee9cb67c990, type: 2}
   m_sharedMaterial: {fileID: -3280892773538166253, guid: 509d21f4947a96e48a411ee9cb67c990, type: 2}
@@ -3687,7 +3687,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: mouse left - dash
+  m_text: Left-click - damage dash
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 509d21f4947a96e48a411ee9cb67c990, type: 2}
   m_sharedMaterial: {fileID: -3280892773538166253, guid: 509d21f4947a96e48a411ee9cb67c990, type: 2}

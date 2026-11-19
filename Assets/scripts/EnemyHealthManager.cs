@@ -11,17 +11,19 @@ public class EnemyHealthManager : MonoBehaviour
     public float hitsRemaining;
     private Rigidbody2D rb;
     private EnemyMovement enemyMovement;
+    private EnemyFollow enemyFollow;
     private score score;
     private Coroutine hitReactionCoroutine;
     private bool movementWasEnabled;
+    private bool followWasEnabled;
     private bool isDead;
 
-   public EnemySpawn enemySpawn;
     private void Awake()
     {
         hitsRemaining = Mathf.Max(1, hitsToKill);
         rb = GetComponent<Rigidbody2D>();
         enemyMovement = GetComponent<EnemyMovement>();
+        enemyFollow = GetComponent<EnemyFollow>();
     }
 
     public void TakeSwordHit(int hitDamage = 1)
@@ -40,13 +42,6 @@ public class EnemyHealthManager : MonoBehaviour
             score = FindFirstObjectByType<score>();
             if (score != null)
                 score.currentscore += score.getScore * score.currentMult * score.scoreStreak;
-           if (enemySpawn == null)
-                enemySpawn = FindFirstObjectByType<EnemySpawn>();
-
-            if (enemySpawn != null)
-                enemySpawn.LowerSpawnedCount();
-            else
-                Debug.LogWarning("No EnemySpawn was found to update the spawned enemy count.", this);
 
             Destroy(gameObject);
             return;
@@ -77,13 +72,16 @@ public class EnemyHealthManager : MonoBehaviour
         {
             StopCoroutine(hitReactionCoroutine);
         }
-        else if (enemyMovement != null)
+        else
         {
-            movementWasEnabled = enemyMovement.enabled;
+            movementWasEnabled = enemyMovement != null && enemyMovement.enabled;
+            followWasEnabled = enemyFollow != null && enemyFollow.enabled;
         }
 
         if (enemyMovement != null)
             enemyMovement.enabled = false;
+        if (enemyFollow != null)
+            enemyFollow.enabled = false;
 
         if (rb != null)
         {
@@ -105,6 +103,8 @@ public class EnemyHealthManager : MonoBehaviour
             rb.linearVelocity = Vector2.zero;
         if (enemyMovement != null && movementWasEnabled)
             enemyMovement.enabled = true;
+        if (enemyFollow != null && followWasEnabled)
+            enemyFollow.enabled = true;
 
         hitReactionCoroutine = null;
     }

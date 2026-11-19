@@ -9,6 +9,7 @@ public class BedScript : MonoBehaviour
 
     // A kulcs neve, ami alatt a Unity tárolja a mentést
     private const string SAVE_KEY = "SavedWave";
+    private const string SAVE_CYCLE_KEY = "SavedWaveCycle";
 
     void Update()
     {
@@ -36,29 +37,35 @@ public class BedScript : MonoBehaviour
     // 1. MENTÉS: Ezt hívja meg az interactálás
     public void SaveCurrentWave()
     {
-        // IDE ÍRD BE a saját WaveSystemManager változód nevét!
-        // Példa: int currentWave = WaveSystemManager.instance.currentWave;
-        int currentWave = FindFirstObjectByType<WaveSystemManager>().currentWaveIndex;
+        WaveSystemManager waveSystem = FindFirstObjectByType<WaveSystemManager>();
+        int currentWave = waveSystem.currentWaveIndex;
 
         PlayerPrefs.SetInt(SAVE_KEY, currentWave);
+        PlayerPrefs.SetInt(SAVE_CYCLE_KEY, waveSystem.CompletedWaveCycles);
         PlayerPrefs.Save(); // Azonnal kiírja a lemezre
 
-        Debug.Log("Game saved! Wave: " + currentWave);
+        Debug.Log($"Game saved! Wave: {currentWave}, cycle: {waveSystem.CompletedWaveCycles + 1}");
     }
 
     // 2. BETÖLTÉS: Ezt hívd meg a WaveSystemManager Start() függvényében!
     public static int LoadSavedWave()
     {
-        // Ha nincs mentés, az 1-es hullámmal tér vissza
-        return PlayerPrefs.GetInt(SAVE_KEY, 1);
+        // Wave indices are zero-based, so a new game starts at Wave 1.
+        return PlayerPrefs.GetInt(SAVE_KEY, 0);
+    }
+
+    public static int LoadSavedWaveCycle()
+    {
+        return PlayerPrefs.GetInt(SAVE_CYCLE_KEY, 0);
     }
 
     // 3. TÖRLÉS: Ezt hívd meg, amikor a játékos meghal!
     public static void DeleteSaveOnDeath()
     {
-        if (PlayerPrefs.HasKey(SAVE_KEY))
+        if (PlayerPrefs.HasKey(SAVE_KEY) || PlayerPrefs.HasKey(SAVE_CYCLE_KEY))
         {
             PlayerPrefs.DeleteKey(SAVE_KEY);
+            PlayerPrefs.DeleteKey(SAVE_CYCLE_KEY);
             PlayerPrefs.Save();
             Debug.Log("Game over – the saved wave has been deleted!");
         }

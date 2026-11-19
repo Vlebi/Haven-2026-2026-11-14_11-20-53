@@ -18,14 +18,19 @@ public class Movement : MonoBehaviour
     [SerializeField] private float dashDuration = 0.3f;
     [SerializeField] private float bounceForce = 25f;
     [SerializeField] private float bounceDuration = 0.3f;
+    [SerializeField] private float successfulDashRecovery = 0.3f;
     [SerializeField] private float stunDuration = 1.5f;
+    [SerializeField, Min(0.1f)] private float utilityDashCooldown = 0.3f;
+    [SerializeField, Min(1f)] private float utilityDashLengthMultiplier = 1.25f;
+    [SerializeField, Range(0f, 1f)] private float dashHealPercent = 0.03f;
     [SerializeField] private float dashBufferTime = 0.15f;
     [SerializeField] private GameObject stunMarker;
     public bool isInvincible = false;
 
     [Header("Combo")]
     [SerializeField] private float speedBonusPerHit = 2f;
-    [SerializeField] private float damageBonusPerHit = 5f;
+    [SerializeField] private float damageBonusPerHit = 2f;
+    [SerializeField, Min(0)] private int maxComboStacks = 3;
 
     private Rigidbody2D rb;
     private Camera cam;
@@ -33,8 +38,11 @@ public class Movement : MonoBehaviour
 
     private bool canDash = true;
     private bool isDashing;
+    private bool isDamageDash;
     private bool isStunned;
     private bool hitEnemyThisDash;
+    private bool utilityDashCharged;
+    private float nextUtilityDashTime;
     private float dashBufferCounter;
 
     private int comboStacks = 0;
@@ -45,6 +53,7 @@ public class Movement : MonoBehaviour
     public float CurrentDamage => baseDamage + (comboStacks * damageBonusPerHit);
     public int ComboDamageBonus => Mathf.RoundToInt(comboStacks * damageBonusPerHit);
     public bool IsDashing => isDashing;
+    public bool IsDamageDash => isDashing && isDamageDash;
 
     void Start()
     {
@@ -69,6 +78,15 @@ public class Movement : MonoBehaviour
 
         // Always capture movement input so there's no dead frame after a dash/stun
         moveInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized;
+
+        if (Input.GetMouseButtonDown(1) && utilityDashCharged && Time.time >= nextUtilityDashTime
+            && !isDashing && !isStunned)
+        {
+            utilityDashCharged = false;
+            nextUtilityDashTime = Time.time + utilityDashCooldown;
+            activeDashCoroutine = StartCoroutine(UtilityDashTowardsMouse());
+            return;
+        }
 
         // Buffer the dash click so clicking slightly early still triggers it
         if (Input.GetMouseButtonDown(0))
@@ -119,6 +137,7 @@ public class Movement : MonoBehaviour
         isInvincible = true;
         canDash = false;
         isDashing = true;
+        isDamageDash = true;
         hitEnemyThisDash = false;
 
         CalculateDashSpeed();
@@ -141,10 +160,46 @@ public class Movement : MonoBehaviour
         if (!hitEnemyThisDash)
         {
             isDashing = false;
+            isDamageDash = false;
             isInvincible = false;
             comboStacks = 0;
             StartCoroutine(StunPlayer());
         }
+    }
+
+    private IEnumerator UtilityDashTowardsMouse()
+    {
+        if (cam == null)
+            cam = Camera.main;
+        if (cam == null)
+        {
+            utilityDashCharged = true;
+            yield break;
+        }
+
+        isDashing = true;
+        isDamageDash = false;
+        isInvincible = true;
+        Vector3 mouseWorldPos = cam.ScreenToWorldPoint(Input.mousePosition);
+        mouseWorldPos.z = transform.position.z;
+        lastDashDirection = (mouseWorldPos - transform.position).normalized;
+        float utilityDashSpeed = Mathf.Min(dashSpeed + speedBonusPerHit, maxDashSpeed);
+        float utilityDashDuration = dashDuration * utilityDashLengthMultiplier;
+        float elapsed = 0f;
+
+        while (elapsed < utilityDashDuration)
+        {
+            float speedMultiplier = Mathf.Lerp(1.2f, 0.8f, elapsed / utilityDashDuration);
+            rb.linearVelocity = lastDashDirection * (utilityDashSpeed * speedMultiplier);
+            elapsed += Time.fixedDeltaTime;
+            yield return new WaitForFixedUpdate();
+        }
+
+        rb.linearVelocity = Vector2.zero;
+        isDashing = false;
+        isDamageDash = false;
+        isInvincible = false;
+        activeDashCoroutine = null;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -158,7 +213,7 @@ public class Movement : MonoBehaviour
                 Physics2D.IgnoreCollision(playerCollider, collision.collider, true);
         }
 
-        if (isDashing && !hitEnemyThisDash)
+        if (IsDamageDash && !hitEnemyThisDash)
             RegisterDashHit();
     }
 
@@ -168,6 +223,13 @@ public class Movement : MonoBehaviour
             return;
 
         hitEnemyThisDash = true;
+        utilityDashCharged = true;
+        HealthManager healthManager = GetComponent<HealthManager>();
+        if (healthManager != null)
+        {
+            Debug.Log($"Dash hit healed '{gameObject.name}' by {dashHealPercent:P0}.", this);
+            healthManager.HealPercent(dashHealPercent);
+        }
         if (score != null)
             score.timePassedBetweenDash = 0;
         if (activeDashCoroutine != null)
@@ -176,7 +238,7 @@ public class Movement : MonoBehaviour
             activeDashCoroutine = null;
         }
 
-        comboStacks++;
+        comboStacks = Mathf.Min(comboStacks + 1, maxComboStacks);
         StartCoroutine(BounceBack());
     }
 
@@ -195,8 +257,10 @@ public class Movement : MonoBehaviour
         }
 
         isDashing = false;
-        canDash = true;
+        isDamageDash = false;
         isInvincible = false;
+        yield return new WaitForSeconds(successfulDashRecovery);
+        canDash = true;
     }
 
     private IEnumerator StunPlayer()
