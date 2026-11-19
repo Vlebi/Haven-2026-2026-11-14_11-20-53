@@ -47940,6 +47940,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   damageAmount: 10
+  damageCooldown: 1
 --- !u!19719996 &752459933
 TilemapCollider2D:
   m_ObjectHideFlags: 0
@@ -51068,7 +51069,7 @@ MonoBehaviour:
       Offset: {x: 0, y: 0}
   CenterOnActivate: 1
   TargetOffset: {x: 0, y: 0, z: 0}
-  Damping: {x: 0.7, y: 0.7, z: 1}
+  Damping: {x: 1, y: 1, z: 1}
   Lookahead:
     Enabled: 0
     Time: 0
@@ -51099,7 +51100,7 @@ MonoBehaviour:
     CustomLookAtTarget: 0
   Lens:
     FieldOfView: 34
-    OrthographicSize: 11
+    OrthographicSize: 3.3
     NearClipPlane: 0.3
     FarClipPlane: 1000
     Dutch: 0
@@ -54830,20 +54831,6 @@ MonoBehaviour:
   m_Area: 0
   m_IgnoreFromBuild: 1
   m_AffectedAgents: ffffffff
---- !u!114 &9876543210
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1205856454}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: afeb1cfa8ed96c345b97855617d53a2a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::spikes
-  damageAmount: 10
-  damageCooldown: 1
 --- !u!1 &1234896973
 GameObject:
   m_ObjectHideFlags: 0
@@ -55371,7 +55358,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 11
+  orthographic size: 3.3
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -55742,7 +55729,7 @@ RectTransform:
   m_GameObject: {fileID: 1410496542}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.7, y: 0.7, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 371729594}
@@ -55750,7 +55737,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -169.7, y: 114.6}
+  m_AnchoredPosition: {x: -125.7, y: 21.1}
   m_SizeDelta: {x: 30, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1410496544
@@ -56380,8 +56367,8 @@ MonoBehaviour:
   spawnBuffer: 0.3
   enemyTag: Enemy
   remainingEnemyGrace: 3
-  useInspectorWaveForTesting: 1
-  currentWaveIndex: 9
+  useInspectorWaveForTesting: 0
+  currentWaveIndex: 0
   currentWaveText: {fileID: 1023339722}
   enemyRemainingText: {fileID: 0}
 --- !u!4 &1679646990
@@ -56645,6 +56632,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9876543210
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1205856454}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: afeb1cfa8ed96c345b97855617d53a2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::spikes
+  damageAmount: 10
+  damageCooldown: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

@@ -154,21 +154,22 @@ public class Attack : MonoBehaviour
 
         movement.RegisterDashHit();
 
+        int damageMultiplier = movement.IsDamageBoostedDash ? 2 : 1;
         float directDamage = weapon.weaponName == "hammer"
             ? 1 + currentDamageBuff
             : weapon.damageInHits + currentDamageBuff + movement.ComboDamageBonus;
-        target.TakeSwordHit((int)directDamage);
+        target.TakeSwordHit((int)directDamage * damageMultiplier);
 
         switch (weapon.weaponName)
         {
             case "flimsy_spr":
-                DamageEnemyBehind(target, 1);
+                DamageEnemyBehind(target, 1 * damageMultiplier);
                 break;
             case "spear":
-                DamageEnemyBehind(target, 3);
+                DamageEnemyBehind(target, 3 * damageMultiplier);
                 break;
             case "hammer":
-                DamageNearbyEnemies(target, 1);
+                DamageNearbyEnemies(target, 1 * damageMultiplier);
                 break;
         }
     }

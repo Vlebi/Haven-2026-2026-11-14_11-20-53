@@ -39,9 +39,11 @@ public class Movement : MonoBehaviour
     private bool canDash = true;
     private bool isDashing;
     private bool isDamageDash;
+    private bool isDamageBoostedDash;
     private bool isStunned;
     private bool hitEnemyThisDash;
     private bool utilityDashCharged;
+    private bool empowerNextDamageDash;
     private float nextUtilityDashTime;
     private float dashBufferCounter;
 
@@ -54,6 +56,7 @@ public class Movement : MonoBehaviour
     public int ComboDamageBonus => Mathf.RoundToInt(comboStacks * damageBonusPerHit);
     public bool IsDashing => isDashing;
     public bool IsDamageDash => isDashing && isDamageDash;
+    public bool IsDamageBoostedDash => IsDamageDash && isDamageBoostedDash;
 
     void Start()
     {
@@ -138,6 +141,8 @@ public class Movement : MonoBehaviour
         canDash = false;
         isDashing = true;
         isDamageDash = true;
+        isDamageBoostedDash = empowerNextDamageDash;
+        empowerNextDamageDash = false;
         hitEnemyThisDash = false;
 
         CalculateDashSpeed();
@@ -161,6 +166,7 @@ public class Movement : MonoBehaviour
         {
             isDashing = false;
             isDamageDash = false;
+            isDamageBoostedDash = false;
             isInvincible = false;
             comboStacks = 0;
             StartCoroutine(StunPlayer());
@@ -199,6 +205,7 @@ public class Movement : MonoBehaviour
         isDashing = false;
         isDamageDash = false;
         isInvincible = false;
+        empowerNextDamageDash = true;
         activeDashCoroutine = null;
     }
 
@@ -258,6 +265,7 @@ public class Movement : MonoBehaviour
 
         isDashing = false;
         isDamageDash = false;
+        isDamageBoostedDash = false;
         isInvincible = false;
         yield return new WaitForSeconds(successfulDashRecovery);
         canDash = true;
